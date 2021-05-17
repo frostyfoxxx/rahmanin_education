@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/signup', [\App\Http\Controllers\UsersController::class, 'singup']);
+Route::post('/signup', [UsersController::class, 'signUp']);
+Route::post('/auth', [UsersController::class, 'signIn']);
