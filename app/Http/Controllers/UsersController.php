@@ -92,4 +92,9 @@ class UsersController extends Controller
         ])->withCookie($cookie);
 
     }
+
+    public function user()
+    {
+        return Auth::user();
+    }
 }
