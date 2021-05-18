@@ -43,4 +43,9 @@ class User extends Authenticatable
     ];
 
     public $timestamps = false;
+
+    public function School()
+    {
+      return $this->hasMany(School::class);
+    }
 }
