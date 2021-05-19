@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PersonalData extends Model
+class FirstParent extends Model
 {
     use HasFactory;
 
@@ -13,13 +13,11 @@ class PersonalData extends Model
         'first_name',
         'middle_name',
         'last_name',
-        'orphan',
-        'childhood_disabled',
-        'the_large_family',
-        'hostel_for_students',
+        'phoneNumber',
     ];
-    public function User()
+    public function Parents()
     {
-      return $this->belongsTo(User::class);
+      return $this->hasMany(Parents::class);
     }
+
 }

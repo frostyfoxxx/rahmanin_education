@@ -13,4 +13,8 @@ class Appraisal extends Model
         'subject',
         'appraisal',
     ];
+    public function User()
+    {
+      return $this->belongsTo(User::class);
+    }
 }

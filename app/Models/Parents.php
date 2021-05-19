@@ -10,9 +10,21 @@ class Parents extends Model
     use HasFactory;
 
     protected $fillable = [
-        'first_name',
-        'middle_name',
-        'last_name',
-        'phoneNumber',
+        'user_id',
+        'first_parent',
+        'secon_parent_id',
+
     ];
+    public function User()
+    {
+      return $this->belongsTo(User::class);
+    }
+    public function FirstParent()
+    {
+        return $this->belongsTo(FirstParent::class);
+    }
+    public function SecondParent()
+    {
+        return $this->belongsTo(SecondParent::class);
+    }
 }

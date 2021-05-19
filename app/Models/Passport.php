@@ -20,4 +20,8 @@ class Passport extends Model
         'address_of_birth',
         'lack_of_citizenship',
     ];
+    public function User()
+    {
+      return $this->belongsTo(User::class);
+    }
 }
