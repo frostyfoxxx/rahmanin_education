@@ -44,9 +44,36 @@ class User extends Authenticatable
     ];
 
     public $timestamps = false;
-
+//<------------------------------------------------------------------------------------------------------------------------->
     public function School()
     {
       return $this->hasMany(School::class);
     }
+//School
+    public function PersonalData()
+    {
+      return $this->hasMany(PersonalData::class);
+    }
+//PersonalData
+    public function Passport()
+    {
+      return $this->hasMany(Passport::class);
+    }
+//Passport
+    public function Parents()
+    {
+      return $this->hasMany(Parents::class);
+    }
+//Parents
+    public function Appraisal()
+    {
+      return $this->hasMany(Appraisal::class);
+    }
+//Appraisal
+    public function AdditionalEducation()
+    {
+      return $this->hasMany(AdditionalEducation::class);
+    }
+
+//AdditionalEducation
 }
