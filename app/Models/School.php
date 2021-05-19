@@ -16,6 +16,7 @@ class School extends Model
         'number_of_certificate',
         'number_of_photo',
         'version_of_the_certificate',
+        'user_id'
     ];
     public function User()
     {

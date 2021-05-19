@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,16 +40,19 @@ class UsersController extends Controller
             ], 402);
         }
 
-        User::create([
+        $user = User::create([
             'phone_number' => $request->input('phone_number'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password'))
         ]);
 
+        $user->roles()->attach(Role::where('slug', 'student')->first());
+        $user->save();
+
         return response()->json([
             'data' => [
                 'code' => 201,
-                'message' => "Users has benn created"
+                'message' => "Users has been created"
             ]
         ], 201);
     }
@@ -95,6 +99,6 @@ class UsersController extends Controller
 
     public function user()
     {
-        return Auth::user();
+        return auth('sanctum')->user()->id;
     }
 }

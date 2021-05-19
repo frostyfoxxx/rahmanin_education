@@ -18,13 +18,14 @@ class CreatePersonalDataTable extends Migration
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');
-            $table->string('orphan');
-            $table->string('childhood_disabled');
-            $table->string('the_large_family');
-            $table->string('hostel_for_students');
+            $table->string('phone');
+            $table->string('orphan')->nullable();
+            $table->string('childhood_disabled')->nullable();
+            $table->string('the_large_family')->nullable();
+            $table->string('hostel_for_students')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-//            $table->timestamps();
+            $table->timestamps();
         });
     }
 

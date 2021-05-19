@@ -17,8 +17,13 @@ class CreateRolesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug');
-//            $table->timestamps();
+            $table->timestamps();
         });
+
+        \Illuminate\Support\Facades\DB::table('roles')->insert([
+            'name' => 'Студент',
+            'slug' => 'student'
+        ]);
     }
 
     /**

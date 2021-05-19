@@ -16,11 +16,10 @@ class CreateAppraisalTable extends Migration
         Schema::create('appraisal', function (Blueprint $table) {
             $table->id();
             $table->string('subject');
-            $table->string('appraisal');
+            $table->integer('appraisal');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-//            $table->primary(['user_id']);
-//            $table->timestamps();
+            $table->timestamps();
         });
     }
 

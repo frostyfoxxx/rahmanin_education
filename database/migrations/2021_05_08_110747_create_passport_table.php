@@ -15,19 +15,18 @@ class CreatePassportTable extends Migration
     {
         Schema::create('passport', function (Blueprint $table) {
             $table->id();
-            $table->string('series');
-            $table->string('number');
-            $table->string('date_of_issue');
+            $table->integer('series');
+            $table->integer('number');
+            $table->date('date_of_issue');
             $table->string('issued_by');
-            $table->string('date_of_birth');
+            $table->date('date_of_birth');
             $table->string('male');
             $table->string('place_of_birth');
-            $table->string('address_of_birth');
-            $table->string('lack_of_citizenship');
+            $table->string('registration_address');
+            $table->boolean('lack_of_citizenship');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-//            $table->primary(['user_id']);
-//            $table->timestamps();
+            $table->timestamps();
         });
     }
 
