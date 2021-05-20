@@ -13,8 +13,10 @@ class QualificationClassifier extends Model
         'specialty_id', 'qualification'
     ];
 
+    protected $table = 'qualification_classifier';
+
     public function getSpecialty()
     {
-        $this->hasMany(SpecialtyClassifier::class, 'id', 'specialty_id');
+        return $this->belongsTo(SpecialtyClassifier::class, 'specialty_id', 'id');
     }
 }

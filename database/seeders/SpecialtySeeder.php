@@ -35,7 +35,7 @@ class SpecialtySeeder extends Seeder
             'specialty' => "Техническая эксплуатация и обслуживание электрического и электромеханического оборудования (по отраслям)"
         ]);
         DB::table('specialty_classifier')->insert([
-            'code' => "15.02.01",
+            'code' => "15.02.14",
             'specialty' => "Оснащение средствами автоматизации технологических процессов и производств (по отраслям)"
         ]);
         DB::table('specialty_classifier')->insert([
@@ -43,7 +43,7 @@ class SpecialtySeeder extends Seeder
             'specialty' => "Мастер контрольно-измерительных приборов и автоматики"
         ]);
         DB::table('specialty_classifier')->insert([
-            'code' => "09.02.01",
+            'code' => "15.01.17",
             'specialty' => "Электромеханик по торговому и холодильному оборудованию"
         ]);
 

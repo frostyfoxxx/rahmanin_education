@@ -22,6 +22,7 @@ class CreateQualificationTable extends Migration
             $table->boolean('budget')->comment('Bool бюджета');
             $table->boolean('commercial')->comment('Bool Коммерции');
             $table->timestamps();
+            $table->foreign('qualification_classifier_id')->references('id')->on('qualification_classifier');
         });
     }
 

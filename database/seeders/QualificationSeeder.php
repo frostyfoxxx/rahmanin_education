@@ -52,7 +52,7 @@ class QualificationSeeder extends Seeder
         ]);
         DB::table('qualification_classifier')->insert([
             'specialty_id' => 7,
-            'qualification' => 'Техник по компьютерным системам'
+            'qualification' => 'Слесарь контрольно-измерительных приборов и автоматики'
         ]);
         DB::table('qualification_classifier')->insert([
             'specialty_id' => 7,
@@ -62,9 +62,6 @@ class QualificationSeeder extends Seeder
             'specialty_id' => 8,
             'qualification' => 'Электромеханик по торговому и холодильному оборудованию'
         ]);
-        DB::table('qualification_classifier')->insert([
-            'specialty_id' => 1,
-            'qualification' => 'Техник по компьютерным системам'
-        ]);
+
     }
 }

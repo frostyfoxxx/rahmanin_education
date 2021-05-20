@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CodeSpecialtyResource extends JsonResource
+class QualificationClassifierResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,7 +15,10 @@ class CodeSpecialtyResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'code' => $this->code
+            'qualification' => $this->qualification,
+
+
+
         ];
     }
 }
