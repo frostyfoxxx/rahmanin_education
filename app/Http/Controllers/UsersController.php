@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -91,7 +92,7 @@ class UsersController extends Controller
         return response()->json([
             'data' => [
                 'code' => 200,
-                'message' => "Authentifaction"
+                'message' => "Аутентифицирован",
             ]
         ])->withCookie($cookie);
 
@@ -100,5 +101,17 @@ class UsersController extends Controller
     public function user()
     {
         return auth('sanctum')->user()->id;
+    }
+
+    public function logout(Request $request)
+    {
+        $cookie = Cookie::forget('jwt');
+
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Logout success'
+            ]
+        ])->withCookie($cookie);
     }
 }

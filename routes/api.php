@@ -21,10 +21,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/signup', [UsersController::class, 'signUp']);
 Route::post('/auth', [UsersController::class, 'signIn']);
-Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'role:den']], function () {
     Route::post('user/personal', [\App\Http\Controllers\StudentController::class, 'postPersonalData']);
     Route::post('/user/passport', [\App\Http\Controllers\StudentController::class, 'postPassportData']);
     Route::post('/user/school', [\App\Http\Controllers\StudentController::class, 'postSchoolData']);
     Route::post('/user/stuff', [\App\Http\Controllers\StudentController::class, 'postAppraisalData']);
     Route::post('/user/parents', [\App\Http\Controllers\StudentController::class, 'postParents']);
 });
+
+Route::get('/code', [\App\Http\Controllers\QualificationController::class, 'getCode']);

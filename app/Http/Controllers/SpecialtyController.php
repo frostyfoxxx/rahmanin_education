@@ -27,7 +27,8 @@ class SpecialtyController extends Controller
             'specialty' => $request->specialty,
         ])->save();
         return response()->json([
-           'code'=>200,
-           'specialty'=>$specialty,
-        ],200);
+            'code' => 200,
+            'specialty' => $specialty,
+        ], 200);
+    }
 }
