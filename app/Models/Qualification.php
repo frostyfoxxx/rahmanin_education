@@ -22,6 +22,6 @@ class Qualification extends Model
 
     public function getQualificationClassifier()
     {
-        $this->hasOne(QualificationClassifier::class, 'id', 'qualification_classifier_id');
+        return $this->hasOne(QualificationClassifier::class, 'id', 'qualification_classifier_id');
     }
 }

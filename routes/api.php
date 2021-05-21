@@ -31,5 +31,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:den']], function () {
 
 Route::get('/code', [\App\Http\Controllers\QualificationController::class, 'getCode']);
 Route::get('/qualification', [\App\Http\Controllers\QualificationController::class, 'getQualification']);
+Route::post('/qualification', [\App\Http\Controllers\QualificationController::class, 'postQualificationQuota']);
+Route::get('/quota', [\App\Http\Controllers\QualificationController::class, 'getQualificationQuota']);
 Route::post('/admin/create', [\App\Http\Controllers\AdminController::class, 'AdminCreateUser']);
 Route::post('/admin/role', [\App\Http\Controllers\AdminController::class, 'CreateRole']);

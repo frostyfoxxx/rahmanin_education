@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\QuotaResource;
 use App\Models\Appraisal;
 use App\Models\FirstParent;
 use App\Models\Parents;
 use App\Models\Passport;
 use App\Models\PersonalData;
+use App\Models\Qualification;
 use App\Models\School;
 use App\Models\SecondParent;
 use App\Models\User;
@@ -248,4 +250,5 @@ class StudentController extends Controller
         ], 201);
 
     }
+
 }

@@ -16,9 +16,6 @@ class QualificationClassifierResource extends JsonResource
     {
         return [
             'qualification' => $this->qualification,
-
-
-
         ];
     }
 }
