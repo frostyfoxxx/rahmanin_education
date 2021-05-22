@@ -9,7 +9,6 @@ class FirstParent extends Model
 {
     use HasFactory;
 
-    public $table = 'first_parent';
 
     public $timestamps = true;
     public $fillable = [

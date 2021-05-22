@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class SpecialtyClassifier extends Model
 {
     use HasFactory;
-    protected $table = 'specialty_classifier';
 
     protected $fillable = [
       'code', 'specialty'

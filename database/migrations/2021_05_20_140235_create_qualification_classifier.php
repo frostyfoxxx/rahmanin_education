@@ -13,11 +13,11 @@ class CreateQualificationClassifier extends Migration
      */
     public function up()
     {
-        Schema::create('qualification_classifier', function (Blueprint $table) {
+        Schema::create('qualification_classifiers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('specialty_id');
             $table->string('qualification');
-            $table->foreign('specialty_id')->references('id')->on('specialty_classifier');
+            $table->foreign('specialty_id')->references('id')->on('specialty_classifiers');
             $table->timestamps();
         });;
     }
@@ -29,6 +29,6 @@ class CreateQualificationClassifier extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('qualification_classifier');
+        Schema::dropIfExists('qualification_classifiers');
     }
 }

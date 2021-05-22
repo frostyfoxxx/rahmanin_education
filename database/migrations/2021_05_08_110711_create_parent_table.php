@@ -13,7 +13,7 @@ class CreateParentTable extends Migration
      */
     public function up()
     {
-        Schema::create('first_parent', function (Blueprint $table) {
+        Schema::create('first_parents', function (Blueprint $table) {
             $table->id();
             $table->string('first_name');
             $table->string('middle_name');
@@ -21,7 +21,7 @@ class CreateParentTable extends Migration
             $table->string('phoneNumber');
             $table->timestamps();
         });
-        Schema::create('second_parent', function (Blueprint $table) {
+        Schema::create('second_parents', function (Blueprint $table) {
             $table->id();
             $table->string('first_name');
             $table->string('middle_name');
@@ -30,14 +30,14 @@ class CreateParentTable extends Migration
             $table->timestamps();
 
         });
-        Schema::create('parent', function (Blueprint $table) {
+        Schema::create('parents', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('first_parent_id');
             $table->unsignedBigInteger('second_parent_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('first_parent_id')->references('id')->on('first_parent');
-            $table->foreign('second_parent_id')->references('id')->on('second_parent');
+            $table->foreign('first_parent_id')->references('id')->on('first_parents');
+            $table->foreign('second_parent_id')->references('id')->on('second_parents');
             $table->timestamps();
         });
     }
@@ -49,8 +49,8 @@ class CreateParentTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('first_parent');
-        Schema::dropIfExists('second_parent');
+        Schema::dropIfExists('first_parents');
+        Schema::dropIfExists('second_parents');
         Schema::dropIfExists('parent');
     }
 }

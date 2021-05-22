@@ -17,9 +17,6 @@ class Passport extends Model
         , 'user_id'
     ];
 
-    protected $table = 'passport';
-
-
     public function passport():BelongsTo
     {
         return $this->belongsTo(User::class,'id','user_id');

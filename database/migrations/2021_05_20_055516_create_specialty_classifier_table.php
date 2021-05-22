@@ -13,7 +13,7 @@ class CreateSpecialtyClassifierTable extends Migration
      */
     public function up()
     {
-        Schema::create('specialty_classifier', function (Blueprint $table) {
+        Schema::create('specialty_classifiers', function (Blueprint $table) {
             $table->id();
             $table->string('code');
             $table->string('specialty');
@@ -28,6 +28,6 @@ class CreateSpecialtyClassifierTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('specialty_classifier');
+        Schema::dropIfExists('specialty_classifiers');
     }
 }

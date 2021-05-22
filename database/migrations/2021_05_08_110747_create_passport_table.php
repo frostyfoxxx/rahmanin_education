@@ -13,7 +13,7 @@ class CreatePassportTable extends Migration
      */
     public function up()
     {
-        Schema::create('passport', function (Blueprint $table) {
+        Schema::create('passports', function (Blueprint $table) {
             $table->id();
             $table->integer('series');
             $table->integer('number');
@@ -37,6 +37,6 @@ class CreatePassportTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('passport');
+        Schema::dropIfExists('passports');
     }
 }

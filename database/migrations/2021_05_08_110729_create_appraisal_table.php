@@ -13,7 +13,7 @@ class CreateAppraisalTable extends Migration
      */
     public function up()
     {
-        Schema::create('appraisal', function (Blueprint $table) {
+        Schema::create('appraisals', function (Blueprint $table) {
             $table->id();
             $table->string('subject');
             $table->integer('appraisal');
@@ -30,6 +30,6 @@ class CreateAppraisalTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('appraisal');
+        Schema::dropIfExists('appraisals');
     }
 }

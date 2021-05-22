@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +22,24 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/signup', [UsersController::class, 'signUp']);
 Route::post('/auth', [UsersController::class, 'signIn']);
-Route::group(['middleware' => ['auth:sanctum', 'role:den']], function () {
+Route::post('/admin-reg', [\App\Http\Controllers\AdminController::class, 'createAdmin']);
+
+Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
     Route::post('user/personal', [\App\Http\Controllers\StudentController::class, 'postPersonalData']);
     Route::post('/user/passport', [\App\Http\Controllers\StudentController::class, 'postPassportData']);
     Route::post('/user/school', [\App\Http\Controllers\StudentController::class, 'postSchoolData']);
     Route::post('/user/stuff', [\App\Http\Controllers\StudentController::class, 'postAppraisalData']);
     Route::post('/user/parents', [\App\Http\Controllers\StudentController::class, 'postParents']);
 });
+
+Route::group(['middleware' =>['auth:sanctum', 'role:admin', 'role:student']], function () {
+    Route::get('/me', [UsersController::class, 'user']);
+});
+
+Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+    Route::post('admin/create', [AdminController::class, 'AdminCreateUser']);
+});
+
 
 Route::get('/code', [\App\Http\Controllers\QualificationController::class, 'getCode']);
 Route::get('/qualification', [\App\Http\Controllers\QualificationController::class, 'getQualification']);

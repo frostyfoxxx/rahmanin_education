@@ -13,7 +13,6 @@ class QualificationClassifier extends Model
         'specialty_id', 'qualification'
     ];
 
-    protected $table = 'qualification_classifier';
 
     public function getSpecialty()
     {

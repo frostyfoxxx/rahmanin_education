@@ -44,7 +44,8 @@ class UsersController extends Controller
         $user = User::create([
             'phone_number' => $request->input('phone_number'),
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password'))
+            'password' => Hash::make($request->input('password')),
+            'stuff' => false
         ]);
 
         $user->roles()->attach(Role::where('slug', 'student')->first());

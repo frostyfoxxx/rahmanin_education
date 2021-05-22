@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class SecondParent extends Model
 {
     use HasFactory;
-    public  $table = 'second_parent';
 
     public $fillable = [
         'first_name', 'middle_name', 'last_name', 'phoneNumber'

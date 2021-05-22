@@ -21,19 +21,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->boolean('stuff');
-//            $table->timestamps();
+            $table->timestamps();
         });
-//        DB::table('users')->insert([
-//            [
-//                'first_name'=>'Роздольский',
-//                'middle_name'=>'Андрей',
-//                'last_name'=>'Александрович',
-//                'phone_number'=>'+79617984103',
-//                'email'=>'aaaaaaa@mail.ru',
-//                'password'=>'123456',
-////                'api_token'=>Str::random(35),
-//            ]
-//        ]);
+
     }
 
     /**

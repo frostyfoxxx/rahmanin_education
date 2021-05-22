@@ -86,6 +86,7 @@ class QualificationController extends Controller
         ], 201);
     }
 
+
     public function getQualificationQuota()
     {
         return response()->json([

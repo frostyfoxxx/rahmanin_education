@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Appraisal extends Model
 {
     use HasFactory;
-    protected $table = 'appraisal';
 
     public $timestamps = true;
     public $fillable = [

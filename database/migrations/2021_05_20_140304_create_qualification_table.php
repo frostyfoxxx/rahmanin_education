@@ -13,7 +13,7 @@ class CreateQualificationTable extends Migration
      */
     public function up()
     {
-        Schema::create('qualification', function (Blueprint $table) {
+        Schema::create('qualifications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('qualification_classifier_id')->comment('Айди из классификатора');
             $table->integer('ft_budget_quota')->comment('Кол-во бюджетных мест на очном формате обучения');
@@ -22,7 +22,7 @@ class CreateQualificationTable extends Migration
             $table->boolean('budget')->comment('Bool бюджета');
             $table->boolean('commercial')->comment('Bool Коммерции');
             $table->timestamps();
-            $table->foreign('qualification_classifier_id')->references('id')->on('qualification_classifier');
+            $table->foreign('qualification_classifier_id')->references('id')->on('qualification_classifiers');
         });
     }
 
@@ -33,6 +33,6 @@ class CreateQualificationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('qualification');
+        Schema::dropIfExists('qualifications');
     }
 }
