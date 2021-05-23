@@ -9,6 +9,8 @@ class QualificationClassifier extends Model
 {
     use HasFactory;
 
+    protected $table = 'qualification_classifiers';
+
     protected $fillable = [
         'specialty_id', 'qualification'
     ];

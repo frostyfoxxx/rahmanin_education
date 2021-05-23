@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\QuotaResource;
+use App\Models\AdditionalEducation;
 use App\Models\Appraisal;
 use App\Models\FirstParent;
 use App\Models\Parents;
@@ -246,6 +247,47 @@ class StudentController extends Controller
             'data' => [
                 'code' => 201,
                 'message' => 'Данные о родителях добавлены'
+            ]
+        ], 201);
+
+    }
+
+    public function postAdditionalEducation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'form_of_education' => 'required|string|max:255',
+            'name_of_educational_institution' => 'required|string|max:255',
+            'number_of_diploma' => 'required|string|max:255',
+            'year_of_ending' => 'required|string|max:255',
+            'qualification' => 'required|string|max:255',
+            'specialty' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => $validator->errors(),
+                    'message' => 'Ошибка валидации'
+                ]
+            ], 422);
+        }
+        $id = auth('sanctum')->user()->id;
+
+        $additionalEducation = AdditionalEducation::create([
+            'form_of_education' => $request->form_of_education,
+            'name_of_educational_institution' => $request->name_of_educational_institution,
+            'number_of_diploma' => $request->number_of_diploma,
+            'year_of_ending' => $request->year_of_ending,
+            'qualification' => $request->qualification,
+            'specialty' => $request->specialty,
+            'user_id'=> $id
+        ])->save();
+
+        return response()->json([
+            'data' => [
+                'code' => 201,
+                "message" => "Данные о доп.образовании добавлены"
             ]
         ], 201);
 
