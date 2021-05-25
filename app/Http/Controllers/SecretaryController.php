@@ -2,25 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\QualificationClassifierResource;
 use App\Models\Qualification;
 use App\Models\QualificationClassifier;
+use App\Models\SpecialtyClassifier;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class SecretaryController extends Controller
 {
-    public function createQuota(Request $request)
+    public function getCode()
     {
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'content' => SpecialtyClassifier::all('code')
+            ]
+        ], 200);
+    }
+
+    public function getQualification(Request $request) // TODO: Сделать не через костыль
+    {
+        $qualification = QualificationClassifier::whereHas('getSpecialty', function (Builder $query) use ($request) {
+            $query->where('code', '=', $request->code);
+        })->get();
+
+        $specialty = SpecialtyClassifier::where('code', $request->code)->first();
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'content' => [
+                    'specialty' => $specialty->specialty,
+                    'qualifications' => QualificationClassifierResource::collection($qualification)
+                ]
+            ]
+        ]);
+    }
+
+    public function postQualificationQuota(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
-            "code" => ['required', 'string', 'exists:specialty_classifier,code'],
-            "specialty" => ['required', 'string', 'exists:specialty_classifier,specialty'],
-            "qualification"  => ['required', "string", "exists:qualification_classifier,qualification"],
+            "code" => ['required', 'string', 'exists:specialty_classifiers,code'],
+            "specialty" => ['required', 'string', 'exists:specialty_classifiers,specialty'],
+            "qualification"  => ['required', "string", "exists:qualification_classifiers,qualification"],
             "ft_budget_quota" => ['required', 'numeric'],
             "rm_budget_quota" => ['required', 'numeric'],
             "working_profession" => ['required', 'boolean'],
             "budget" => ['required', 'boolean'],
             "commercial" => ['required', 'boolean']
         ]);
+
+
 
         if($validator->fails()) {
             return response()->json([

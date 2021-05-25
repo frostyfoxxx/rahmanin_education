@@ -16,5 +16,8 @@ class AdditionalEducation extends Model
         'year_of_ending',
         'qualification',
         'specialty',
+        'user_id',
     ];
+
+    protected $table = 'additional_educations';
 }
