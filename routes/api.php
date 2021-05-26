@@ -42,16 +42,17 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
 /*
  * Тестовый метод для мидлвейра ролей
 */
-Route::group(['middleware' =>['auth:sanctum', 'role:admin', 'role:student']], function () {
+Route::group(['middleware' =>['auth:sanctum', 'role:admission-secretary']], function () {
     Route::get('/me', [UsersController::class, 'user']);
+    Route::post('admin/create', [AdminController::class, 'AdminCreateUser']);
 });
 
 /*
  * Методы администратора
  */
 
-Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
-    Route::post('admin/create', [AdminController::class, 'AdminCreateUser']);
+Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], function () {
+
 });
 
 /*

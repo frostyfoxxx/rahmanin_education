@@ -101,7 +101,7 @@ class UsersController extends Controller
 
     public function user()
     {
-        return auth('sanctum')->user()->id;
+        return auth('sanctum')->user();
     }
 
     public function logout(Request $request)

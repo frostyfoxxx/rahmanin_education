@@ -54,6 +54,8 @@ class SecretaryController extends Controller
             "commercial" => ['required', 'boolean']
         ]);
 
+        // TODO: Пофиксить миграции квот, добавить поля 'commercial_quota', убрать boolean 'budget' and 'commercial'.
+
 
 
         if($validator->fails()) {
