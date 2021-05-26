@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\Validator;
 
 class QualificationController extends Controller
 {
-    //
-
-
-
-
     public function getQualificationQuota()
     {
         return response()->json([

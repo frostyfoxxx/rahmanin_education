@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AdditionalEducationResource;
+use App\Http\Resources\AppraisalResource;
+use App\Http\Resources\ParentResource;
+use App\Http\Resources\PassportResource;
+use App\Http\Resources\PersonalDataResource;
 use App\Http\Resources\QuotaResource;
+use App\Http\Resources\SchoolResource;
 use App\Models\AdditionalEducation;
 use App\Models\Appraisal;
 use App\Models\FirstParent;
@@ -16,10 +22,26 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Builder;
 
 
 class StudentController extends Controller
 {
+    /**
+     * @return JsonResponse
+     */
+    public function getPersonalData(): JsonResponse
+    {
+        $user = auth('sanctum')->user()->id;
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Полученные данные',
+                'content' => PersonalDataResource::collection(PersonalData::where('user_id', $user)->get()),
+            ]
+        ], 200);
+    }
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -69,7 +91,26 @@ class StudentController extends Controller
         ], 201);
     }
 
-    public function postPassportData(Request $request)
+    /**
+     * @return JsonResponse
+     */
+    public function getPassportData(): JsonResponse
+    {
+        $user = auth('sanctum')->user()->id;
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Полученные данные',
+                'content' => PassportResource::collection(Passport::where('user_id', $user)->get()),
+            ]
+        ], 200);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function postPassportData(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -119,7 +160,26 @@ class StudentController extends Controller
 
     }
 
-    public function postSchoolData(Request $request)
+    /**
+     * @return JsonResponse
+     */
+    public function getSchoolData(): JsonResponse
+    {
+        $user = auth('sanctum')->user()->id;
+        return response()->json([
+
+            'code' => 200,
+            'message' => 'Полученные данные',
+            'content' => SchoolResource::collection(School::where('user_id', $user)->get())
+
+        ], 200);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function postSchoolData(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'school_name' => 'required|string|max:255',
@@ -127,6 +187,7 @@ class StudentController extends Controller
             'year_of_ending' => 'required|date_format:Y',
             'number_of_certificate' => 'required|numeric|digits:14',
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'error' => [
@@ -149,14 +210,33 @@ class StudentController extends Controller
         ]);
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Данные о школе обновлены'
-            ]
+
+            'code' => 201,
+            'message' => 'Данные о школе обновлены'
+
         ], 201);
     }
 
-    public function postAppraisalData(Request $request)
+    /**
+     * @return JsonResponse
+     */
+    public function getAppraisalData(): JsonResponse
+    {
+        $user = auth('sanctum')->user()->id;
+        return response()->json([
+
+            'code' => 200,
+            'message' => 'Полученные данные',
+            'content' => AppraisalResource::collection(Appraisal::where('user_id', $user)->get())
+
+        ], 200);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function postAppraisalData(Request $request): JsonResponse
     {
 
 
@@ -183,20 +263,74 @@ class StudentController extends Controller
         }
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Предметы с оценками добавлены'
-            ],
+            'code' => 201,
+            'message' => 'Предметы с оценками добавлены'
         ], 201);
     }
 
-    public function postParents(Request $request)
+    public function getParent() // TODO: Пофиксить вывод родителей
+    {
+
+        $user = auth('sanctum')->user()->id;
+//        $parents = Parents::whereHas($user, function ($query) {
+//            $query->where('first_parent_id');
+//        })->whereHas($user, function ($query) {
+//            $query->where('second_parent_id');
+//        })->get();
+        $parent = Parents::where('user_id', $user)->first();
+
+        $firstParent = FirstParent::find($parent->first_parent_id);
+
+        if($secondParent = SecondParent::find($parent->second_parent_id)) {
+            return response()->json([
+                'code' => 200,
+                'message' => "Родители найдены",
+                'content' => [
+                    [
+                        'first_name'=>$firstParent->first_name,
+                        'middle_name'=>$firstParent->middle_name,
+                        'last_name'=>$firstParent->last_name,
+                        'phone_number'=>$firstParent->phoneNumber,
+                    ],
+                    [
+                        'first_name'=>$secondParent->first_name,
+                        'middle_name'=>$secondParent->middle_name,
+                        'last_name'=>$secondParent->last_name,
+                        'phone_number'=>$secondParent->phone_number,
+                    ]
+                ]
+
+            ], 200);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => "Родители найдены",
+            'content' => [
+                [
+                    'first_name'=>$firstParent->first_name,
+                    'middle_name'=>$firstParent->middle_name,
+                    'last_name'=>$firstParent->last_name,
+                    'phone_number'=>$firstParent->phoneNumber,
+                ]
+            ]
+
+        ], 200);
+
+
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function postParents(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             '*.first_name' => 'string|max:255',
             '*.middle_name' => 'string|max:255',
             '*.last_name' => 'string|max:255',
-            '*.phone_number' => 'string|max:255',
+            '*.phone' => 'string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -244,15 +378,32 @@ class StudentController extends Controller
         }
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Данные о родителях добавлены'
-            ]
+            'code' => 201,
+            'message' => 'Данные о родителях добавлены'
         ], 201);
 
     }
 
-    public function postAdditionalEducation(Request $request)
+    /**
+     * @return JsonResponse
+     */
+    public function getAdditionalEducation(): JsonResponse
+    {
+        $user = auth('sanctum')->user()->id;
+        return response()->json([
+            'items' => [
+                'item' => AdditionalEducationResource::collection(AdditionalEducation::where('user_id', $user)->get()),
+                'code' => 200,
+                'message' => 'Получены данные',
+            ]
+        ], 200);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function postAdditionalEducation(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'form_of_education' => 'required|string|max:255',
@@ -281,7 +432,7 @@ class StudentController extends Controller
             'year_of_ending' => $request->year_of_ending,
             'qualification' => $request->qualification,
             'specialty' => $request->specialty,
-            'user_id'=> $id
+            'user_id' => $id
         ])->save();
 
         return response()->json([

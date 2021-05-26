@@ -31,12 +31,18 @@ Route::post('/logout', [UsersController::class, 'logout']);
  * Методы абитуриента
  */
 Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
-    Route::post('user/personal', [StudentController::class, 'postPersonalData']); // Добавление персональных данных
+    Route::post('/user/personal', [StudentController::class, 'postPersonalData']); // Добавление персональных данных
+    Route::get('/user/personal', [StudentController::class, 'getPersonalData']);
     Route::post('/user/passport', [StudentController::class, 'postPassportData']); //  Добавление паспортных данных
+    Route::get('/user/passport', [StudentController::class, 'getPassportData']);
     Route::post('/user/school', [StudentController::class, 'postSchoolData']); // Добавление данных о школе
+    Route::get('/user/school', [StudentController::class, 'getSchoolData']);
     Route::post('/user/stuff', [StudentController::class, 'postAppraisalData']); // Добавление предметов аттестата
+    Route::get('/user/stuff', [StudentController::class, 'getAppraisalData']);
     Route::post('/user/parents', [StudentController::class, 'postParents']); // Добавление родителей
+    Route::get('/user/parents', [StudentController::class, 'getParent']);
     Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']); // Добавление данных о доп.образовании
+    Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']);
 });
 
 /*

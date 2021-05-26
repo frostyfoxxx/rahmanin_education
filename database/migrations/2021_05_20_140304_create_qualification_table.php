@@ -21,6 +21,7 @@ class CreateQualificationTable extends Migration
             $table->boolean('working_profession')->comment('Рабочая профессия');
             $table->boolean('budget')->comment('Bool бюджета');
             $table->boolean('commercial')->comment('Bool Коммерции');
+            $table->double('average_score_invite');
             $table->timestamps();
             $table->foreign('qualification_classifier_id')->references('id')->on('qualification_classifiers');
         });

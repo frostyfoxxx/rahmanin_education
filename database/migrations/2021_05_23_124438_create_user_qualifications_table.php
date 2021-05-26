@@ -14,14 +14,14 @@ class CreateUserQualificationsTable extends Migration
     public function up()
     {
         Schema::create('user_qualifications', function (Blueprint $table) {
+
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('qualification_id');
-            $table->integer('priority');
-            $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('qualification_id')->references('id')->on('qualifications');
+            $table->timestamps();
         });
     }
 
