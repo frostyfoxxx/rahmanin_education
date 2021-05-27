@@ -32,23 +32,24 @@ Route::post('/logout', [UsersController::class, 'logout']);
  */
 Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
     Route::post('/user/personal', [StudentController::class, 'postPersonalData']); // Добавление персональных данных
-    Route::get('/user/personal', [StudentController::class, 'getPersonalData']);
+    Route::get('/user/personal', [StudentController::class, 'getPersonalData']); // Вывод персональных данных
     Route::post('/user/passport', [StudentController::class, 'postPassportData']); //  Добавление паспортных данных
-    Route::get('/user/passport', [StudentController::class, 'getPassportData']);
+    Route::get('/user/passport', [StudentController::class, 'getPassportData']); // Вывод паспортных данных
     Route::post('/user/school', [StudentController::class, 'postSchoolData']); // Добавление данных о школе
-    Route::get('/user/school', [StudentController::class, 'getSchoolData']);
+    Route::get('/user/school', [StudentController::class, 'getSchoolData']); // Вывод данных о школе
     Route::post('/user/stuff', [StudentController::class, 'postAppraisalData']); // Добавление предметов аттестата
-    Route::get('/user/stuff', [StudentController::class, 'getAppraisalData']);
+    Route::get('/user/stuff', [StudentController::class, 'getAppraisalData']); // Вывод предметов с оценками
     Route::post('/user/parents', [StudentController::class, 'postParents']); // Добавление родителей
-    Route::get('/user/parents', [StudentController::class, 'getParent']);
+    Route::get('/user/parents', [StudentController::class, 'getParent']); // Вывод родителей
     Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']); // Добавление данных о доп.образовании
-    Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']);
+    Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']); // Вывод данных о доп.образовании
+    Route::post('/user/specialty', [StudentController::class, 'postQuota']);
 });
 
 /*
  * Тестовый метод для мидлвейра ролей
 */
-Route::group(['middleware' =>['auth:sanctum', 'role:admission-secretary']], function () {
+Route::group(['middleware' =>['auth:sanctum', 'role:admin']], function () {
     Route::get('/me', [UsersController::class, 'user']);
     Route::post('admin/create', [AdminController::class, 'AdminCreateUser']);
 });

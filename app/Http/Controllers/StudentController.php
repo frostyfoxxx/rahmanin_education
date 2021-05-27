@@ -19,6 +19,7 @@ use App\Models\Qualification;
 use App\Models\School;
 use App\Models\SecondParent;
 use App\Models\User;
+use App\Models\UserQualification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -167,11 +168,11 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
         return response()->json([
-
-            'code' => 200,
-            'message' => 'Полученные данные',
-            'content' => SchoolResource::collection(School::where('user_id', $user)->get())
-
+            'data' => [
+                'code' => 200,
+                'message' => 'Полученные данные',
+                'content' => SchoolResource::collection(School::where('user_id', $user)->get())
+            ]
         ], 200);
     }
 
@@ -210,10 +211,10 @@ class StudentController extends Controller
         ]);
 
         return response()->json([
-
-            'code' => 201,
-            'message' => 'Данные о школе обновлены'
-
+            'data' => [
+                'code' => 201,
+                'message' => 'Данные о школе обновлены'
+            ]
         ], 201);
     }
 
@@ -224,11 +225,11 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
         return response()->json([
-
-            'code' => 200,
-            'message' => 'Полученные данные',
-            'content' => AppraisalResource::collection(Appraisal::where('user_id', $user)->get())
-
+            'data' => [
+                'code' => 200,
+                'message' => 'Полученные данные',
+                'content' => AppraisalResource::collection(Appraisal::where('user_id', $user)->get())
+            ]
         ], 200);
     }
 
@@ -262,9 +263,21 @@ class StudentController extends Controller
             Appraisal::create($item);
         }
 
+        $appraisal = Appraisal::where('user_id', $user)->get();
+
+        $summark = 0;
+        foreach ($appraisal as $mark) {
+            $summark += $mark->appraisal;
+        }
+
+        $middlemark = $summark / count($appraisal);
+
+
         return response()->json([
-            'code' => 201,
-            'message' => 'Предметы с оценками добавлены'
+            'data' => [
+                'code' => 201,
+                'message' => 'Предметы с оценками добавлены'
+            ]
         ], 201);
     }
 
@@ -281,37 +294,40 @@ class StudentController extends Controller
 
         $firstParent = FirstParent::find($parent->first_parent_id);
 
-        if($secondParent = SecondParent::find($parent->second_parent_id)) {
+        if ($secondParent = SecondParent::find($parent->second_parent_id)) {
             return response()->json([
-                'code' => 200,
-                'message' => "Родители найдены",
-                'content' => [
-                    [
-                        'first_name'=>$firstParent->first_name,
-                        'middle_name'=>$firstParent->middle_name,
-                        'last_name'=>$firstParent->last_name,
-                        'phone_number'=>$firstParent->phoneNumber,
-                    ],
-                    [
-                        'first_name'=>$secondParent->first_name,
-                        'middle_name'=>$secondParent->middle_name,
-                        'last_name'=>$secondParent->last_name,
-                        'phone_number'=>$secondParent->phone_number,
+                'data' => [
+                    'code' => 200,
+                    'message' => "Родители найдены",
+                    'content' => [
+                        [
+                            'first_name' => $firstParent->first_name,
+                            'middle_name' => $firstParent->middle_name,
+                            'last_name' => $firstParent->last_name,
+                            'phone_number' => $firstParent->phoneNumber,
+                        ],
+                        [
+                            'first_name' => $secondParent->first_name,
+                            'middle_name' => $secondParent->middle_name,
+                            'last_name' => $secondParent->last_name,
+                            'phone_number' => $secondParent->phone_number,
+                        ]
                     ]
                 ]
-
             ], 200);
         }
 
         return response()->json([
-            'code' => 200,
-            'message' => "Родители найдены",
-            'content' => [
-                [
-                    'first_name'=>$firstParent->first_name,
-                    'middle_name'=>$firstParent->middle_name,
-                    'last_name'=>$firstParent->last_name,
-                    'phone_number'=>$firstParent->phoneNumber,
+            'data' => [
+                'code' => 200,
+                'message' => "Родители найдены",
+                'content' => [
+                    [
+                        'first_name' => $firstParent->first_name,
+                        'middle_name' => $firstParent->middle_name,
+                        'last_name' => $firstParent->last_name,
+                        'phone_number' => $firstParent->phoneNumber,
+                    ]
                 ]
             ]
 
@@ -378,8 +394,10 @@ class StudentController extends Controller
         }
 
         return response()->json([
-            'code' => 201,
-            'message' => 'Данные о родителях добавлены'
+            'data' => [
+                'code' => 201,
+                'message' => 'Данные о родителях добавлены'
+            ]
         ], 201);
 
     }
@@ -439,6 +457,47 @@ class StudentController extends Controller
             'data' => [
                 'code' => 201,
                 "message" => "Данные о доп.образовании добавлены"
+            ]
+        ], 201);
+
+    }
+
+    public function postQuota(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            '*.code' => ['required', 'string', 'exists:specialty_classifiers,code'],
+            '*.specialty' => ['required', 'string', 'exists:specialty_classifiers,specialty'],
+            '*.qualification' => ['required', 'string', 'exists:qualification_classifiers,qualification']
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Ошибка валидации',
+                    'errors' => $validator->errors()
+                ]
+            ]);
+        }
+
+        $user = auth('sanctum')->user()->id;
+
+        foreach ($request as $item) {
+
+            $qualification = Qualification::whereHas('getQualificationClassifier', function (Builder $query) use ($item) {
+                $query->where('qualification', $item->qualifaction);
+            });
+
+            UserQualification::create([
+                'qualification_id' => $qualification->id,
+                'user_id' => $user
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'code' => 201,
+                'message' => 'Специальности добавлены',
             ]
         ], 201);
 
