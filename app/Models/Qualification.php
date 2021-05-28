@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Qualification extends Model
 {
@@ -18,8 +19,11 @@ class Qualification extends Model
         'commercial'
     ];
 
-    public function getQualificationClassifier()
+    /**
+     * @return BelongsTo
+     */
+    public function getQualificationClassifier():BelongsTo
     {
-        return $this->hasOne(QualificationClassifier::class, 'id', 'qualification_classifier_id');
+        return $this->belongsTo(QualificationClassifier::class,'qualification_classifier_id', 'id');
     }
 }

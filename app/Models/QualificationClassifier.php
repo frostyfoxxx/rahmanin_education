@@ -20,4 +20,9 @@ class QualificationClassifier extends Model
     {
         return $this->belongsTo(SpecialtyClassifier::class, 'specialty_id', 'id');
     }
+
+    public function qualification()
+    {
+        return $this->hasOne(Qualification::class, 'qualification_classifier_id', 'id');
+    }
 }

@@ -202,7 +202,7 @@ class StudentController extends Controller
         $user = auth('sanctum')->user()->id;
 
 
-        $school = School::create([
+        $school = School::updateOrCreate([
             'school_name' => $request->school_name,
             'number_of_classes' => $request->number_of_classes,
             'year_of_ending' => $request->year_of_ending,
@@ -470,6 +470,7 @@ class StudentController extends Controller
             '*.qualification' => ['required', 'string', 'exists:qualification_classifiers,qualification']
         ]);
 
+
         if ($validator->fails()) {
             return response()->json([
                 'error' => [
@@ -482,15 +483,26 @@ class StudentController extends Controller
 
         $user = auth('sanctum')->user()->id;
 
-        foreach ($request as $item) {
+        $marks = Appraisal::where('user_id', $user)->get();
+        $middlemark = 0;
 
-            $qualification = Qualification::whereHas('getQualificationClassifier', function (Builder $query) use ($item) {
-                $query->where('qualification', $item->qualifaction);
-            });
+        foreach ($marks as $mark) {
+            $middlemark += $mark->appraisal;
+            $mark->appraisal;
+        }
+
+        $middlemark = $middlemark / count($marks);
+
+        foreach ($request->all() as $item) {
+            $qualification = Qualification::whereHas('getQualificationClassifier', function ($query) use ($item) {
+                $query->where('qualification', $item['qualification']);
+            })->first();
+
 
             UserQualification::create([
                 'qualification_id' => $qualification->id,
-                'user_id' => $user
+                'user_id' => $user,
+                'middlemark' => $middlemark
             ]);
         }
 
