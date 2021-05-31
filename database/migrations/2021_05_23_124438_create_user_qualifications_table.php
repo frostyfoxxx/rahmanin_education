@@ -19,6 +19,8 @@ class CreateUserQualificationsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('qualification_id');
             $table->double('middlemark')->nullable();
+            $table->string('form_education');
+            $table->string('type_education')->comment('Бюджет/Коммерция');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('qualification_id')->references('id')->on('qualifications');
             $table->timestamps();

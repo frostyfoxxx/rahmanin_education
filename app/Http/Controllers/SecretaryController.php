@@ -86,4 +86,18 @@ class SecretaryController extends Controller
             ]
         ], 201);
     }
+
+    public function createRecording(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'date_recording' => ['required', 'date_format:Y-m-d'],
+            'time_start' => ['required', 'date_format:H:i']
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'data' => "ya loh"
+            ]);
+        }
+    }
 }

@@ -502,7 +502,9 @@ class StudentController extends Controller
             UserQualification::create([
                 'qualification_id' => $qualification->id,
                 'user_id' => $user,
-                'middlemark' => $middlemark
+                'middlemark' => $middlemark,
+                'form_education' => $item['form_education'],
+                'type_education' => $item['type_education']
             ]);
         }
 

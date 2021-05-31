@@ -70,6 +70,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], fun
     Route::get('admin/code', [SecretaryController::class, 'getCode']); // Метод получения кодов специальности
     Route::get('admin/qualification', [SecretaryController::class, 'getQualification']); // Метод получения квалификаций по данной специальности
     Route::post('/admin/quota', [SecretaryController::class, 'postQualificationQuota']); // Добавление квот
+    Route::post('/admin/timewindow', [SecretaryController::class, 'createRecording']); // Добавление временных окон
 });
 
 

@@ -12,6 +12,6 @@ class UserQualification extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'user_id', 'qualification_id', 'middlemark'
+        'user_id', 'qualification_id', 'middlemark', 'form_education', 'type_education'
     ];
 }
