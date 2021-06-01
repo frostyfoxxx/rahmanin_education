@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\QualificationClassifierResource;
 use App\Models\Qualification;
 use App\Models\QualificationClassifier;
+use App\Models\RecordingDate;
+use App\Models\RecordingTime;
 use App\Models\SpecialtyClassifier;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use function GuzzleHttp\Psr7\str;
 
 class SecretaryController extends Controller
 {
@@ -91,13 +94,53 @@ class SecretaryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'date_recording' => ['required', 'date_format:Y-m-d'],
-            'time_start' => ['required', 'date_format:H:i']
+            'time_start' => ['required', 'date_format:H:i:s'],
+            'time_ends' => ['required', 'date_format:H:i:s'],
+            'interval' => ['required', 'integer'],
+            'start_lunch' => ['required', 'date_format:H:i:s'],
+            'ends_lunch' => ['required', 'date_format:H:i:s']
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'data' => "ya loh"
+                'error' => [
+                    'code' => 422,
+                    'message' => "Ошибка валидации",
+                    'errors' => $validator->errors()
+                ]
             ]);
         }
+
+
+
+        echo $intervalBeforeLunch = (strtotime($request->start_lunch) - strtotime($request->time_start)) / ($request->interval * 60);
+        echo "  ";
+        echo $intervalAfterLunch = (strtotime($request->time_ends) - strtotime($request->ends_lunch)) / ($request->interval * 60);
+
+        $interval = [];
+
+        for ($i = 1; $i<=$intervalBeforeLunch; $i++) {
+            $interval[] = date("H:i:s", strtotime($request->time_start) + $request->interval * 60 * $i);
+
+        }
+
+        for ($i = 1; $i<=$intervalAfterLunch; $i++) {
+            $interval[] = date("H:i:s", strtotime($request->ends_lunch) + $request->interval * 60 * $i);
+        }
+
+        $date = RecordingDate::create([
+            'date_recording' => $request->date_recording
+        ]);
+
+
+        foreach ($interval as $item) {
+            RecordingTime::create([
+                'daterecording_id' => $date->id,
+                'recording_start' => date("H:i:s", strtotime($item) - $request->interval * 60),
+                'recording_ends' => $item
+            ]);
+        }
+
+
     }
 }

@@ -16,6 +16,7 @@ use App\Models\Parents;
 use App\Models\Passport;
 use App\Models\PersonalData;
 use App\Models\Qualification;
+use App\Models\RecordingTime;
 use App\Models\School;
 use App\Models\SecondParent;
 use App\Models\User;
@@ -514,6 +515,15 @@ class StudentController extends Controller
                 'message' => 'Специальности добавлены',
             ]
         ], 201);
+
+    }
+
+    public function getRecordingTime(Request $request)
+    {
+        return $time = RecordingTime::whereHas('getDate', function ($query) use ($request) {
+            $query->where('date_recording', $request->date_recording);
+        })->get();
+
 
     }
 
