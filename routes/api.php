@@ -6,6 +6,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SecretaryController;
+use App\Http\Controllers\EmployeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,17 +51,19 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
 /*
  * Тестовый метод для мидлвейра ролей
 */
-Route::group(['middleware' =>['auth:sanctum', 'role:admin']], function () {
+Route::group(['middleware' =>['auth:sanctum', ]], function () {
     Route::get('/me', [UsersController::class, 'user']);
-    Route::post('admin/create', [AdminController::class, 'AdminCreateUser']);
+
 });
 
 /*
  * Методы администратора
  */
 
-Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], function () {
-
+Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
+    Route::post('admin/create', [AdminController::class, 'AdminCreateUser']); // Создание работников администратором
+    Route::post('admin/info', [AdminController::class, 'postInfoEducation']); // Создание информации об учебном заведении
+    Route::get('admin/info', [AdminController::class, 'getInfoEducation']); // Вывод информации об учебном заведении
 });
 
 /*
@@ -74,6 +77,13 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], fun
     Route::post('/admin/timewindow', [SecretaryController::class, 'createRecording']); // Добавление временных окон
 });
 
+/*
+ * Методы сотрудника
+ */
+//Route::group(['middleware' => ['auth:sanctum', 'role:admissions-officer']], function () {
+    Route::post('admin/cart', [EmployeeController::class, 'cart']);
+    Route::get('admin/cart', [EmployeeController::class, 'getCart']);
+//});
 
 /*
  * Готовые, но не интегрированные методы

@@ -22,8 +22,7 @@ class PassportResource extends JsonResource
             'date_of_birth'=>$this->date_of_birth,
             'male'=>$this->male,
             'place_of_birth'=>$this->place_of_birth,
-            'address_of_birth'=>$this->address_of_birth,
-            'lack_of_citizenship'=>$this->lack_of_citizenship,
+            'lack_of_citizenship'=>($this->lack_of_citizenship ===  1) ? true : false,
         ];
     }
 }

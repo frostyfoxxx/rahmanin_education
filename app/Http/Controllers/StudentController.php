@@ -54,7 +54,7 @@ class StudentController extends Controller
             'first_name' => 'required|string|max:255',
             'middle_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:12'
+            'phone' => 'required|numeric|digits:11'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -77,7 +77,7 @@ class StudentController extends Controller
             ], 400);
         }
 
-        $personalData = PersonalData::create([
+        PersonalData::create([
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
@@ -203,7 +203,7 @@ class StudentController extends Controller
         $user = auth('sanctum')->user()->id;
 
 
-        $school = School::updateOrCreate([
+        School::updateOrCreate([
             'school_name' => $request->school_name,
             'number_of_classes' => $request->number_of_classes,
             'year_of_ending' => $request->year_of_ending,
@@ -240,8 +240,6 @@ class StudentController extends Controller
      */
     public function postAppraisalData(Request $request): JsonResponse
     {
-
-
         $validator = Validator::make($request->all(), [
             '*.subject' => 'required|string|max:255',
             '*.appraisal' => 'required|integer|digits:1|between:2,5'
@@ -272,6 +270,10 @@ class StudentController extends Controller
         }
 
         $middlemark = $summark / count($appraisal);
+
+        $school = School::where('user_id', $user)->first();
+        $school['middlemark'] = $middlemark;
+        $school->save();
 
 
         return response()->json([
@@ -344,9 +346,7 @@ class StudentController extends Controller
     public function postParents(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            '*.first_name' => 'string|max:255',
-            '*.middle_name' => 'string|max:255',
-            '*.last_name' => 'string|max:255',
+            '*.name' => 'string|max:255',
             '*.phone' => 'string|max:255',
         ]);
 

@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->boolean('stuff');
+            $table->boolean('data_confirmed')->nullable();
             $table->timestamps();
         });
 

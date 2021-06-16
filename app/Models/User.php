@@ -22,7 +22,8 @@ class User extends Authenticatable
         'phone_number',
         'email',
         'password',
-        'stuff'
+        'stuff',
+        'data_confirmed'
     ];
 
     /**
@@ -48,17 +49,17 @@ class User extends Authenticatable
 //<------------------------------------------------------------------------------------------------------------------------->
     public function School()
     {
-      return $this->hasMany(School::class);
+      return $this->hasOne(School::class);
     }
 //School
     public function PersonalData()
     {
-      return $this->hasMany(PersonalData::class);
+      return $this->hasOne(PersonalData::class);
     }
 //PersonalData
     public function Passport()
     {
-      return $this->hasMany(Passport::class);
+      return $this->hasOne(Passport::class);
     }
 //Passport
     public function Parents()

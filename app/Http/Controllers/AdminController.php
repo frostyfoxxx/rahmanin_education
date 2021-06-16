@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Role;
@@ -11,6 +12,42 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+
+    public function getInfoEducation()
+    {
+        $options = Options::find(1);
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Information has been founded',
+                'content' => [
+                    'name' => $options->name_education,
+                    'name_short' => $options->name_short,
+                    'region' => $options->region,
+                    'director_name' => $options->director_name
+                ]
+            ]
+        ], 200);
+    }
+
+    public function postInfoEducation(Request $request)
+    {
+        Options::create([
+            'name_education' => $request->name,
+            'name_short' => $request->name_short,
+            'region' => $request->region,
+            'address_education'=> $request->address,
+            'director_name' => $request->director_name,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'code' => 201,
+                'message' => 'Basic information about the educational institution created'
+            ]
+        ], 201);
+    }
+
     public function AdminCreateUser(Request $request)
     {
 

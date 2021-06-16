@@ -49,19 +49,15 @@ class SecretaryController extends Controller
         $validator = Validator::make($request->all(), [
             "code" => ['required', 'string', 'exists:specialty_classifiers,code'],
             "specialty" => ['required', 'string', 'exists:specialty_classifiers,specialty'],
-            "qualification"  => ['required', "string", "exists:qualification_classifiers,qualification"],
+            "qualification" => ['required', "string", "exists:qualification_classifiers,qualification"],
             "ft_budget_quota" => ['required', 'numeric'],
             "rm_budget_quota" => ['required', 'numeric'],
             "working_profession" => ['required', 'boolean'],
-            "budget" => ['required', 'boolean'],
-            "commercial" => ['required', 'boolean']
+            "ft_commercial" => ['required', 'boolean'],
+            "rm_commercial" => ['required', 'boolean']
         ]);
 
-        // TODO: Пофиксить миграции квот, добавить поля 'commercial_quota', убрать boolean 'budget' and 'commercial'.
-
-
-
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'error' => [
                     'code' => 422,
@@ -78,8 +74,8 @@ class SecretaryController extends Controller
             "ft_budget_quota" => $request->ft_budget_quota,
             "rm_budget_quota" => $request->rm_budget_quota,
             "working_profession" => $request->working_profession,
-            "budget" => $request->budget,
-            "commercial" => $request->commercial
+            "rm_commercial" => $request->rm_commercial,
+            "ft_commercial" => $request->ft_commercial
         ]);
 
         return response()->json([
@@ -112,19 +108,18 @@ class SecretaryController extends Controller
         }
 
 
+        $intervalBeforeLunch = (strtotime($request->start_lunch) - strtotime($request->time_start)) / ($request->interval * 60);
 
-        echo $intervalBeforeLunch = (strtotime($request->start_lunch) - strtotime($request->time_start)) / ($request->interval * 60);
-        echo "  ";
-        echo $intervalAfterLunch = (strtotime($request->time_ends) - strtotime($request->ends_lunch)) / ($request->interval * 60);
+        $intervalAfterLunch = (strtotime($request->time_ends) - strtotime($request->ends_lunch)) / ($request->interval * 60);
 
         $interval = [];
 
-        for ($i = 1; $i<=$intervalBeforeLunch; $i++) {
+        for ($i = 1; $i <= $intervalBeforeLunch; $i++) {
             $interval[] = date("H:i:s", strtotime($request->time_start) + $request->interval * 60 * $i);
 
         }
 
-        for ($i = 1; $i<=$intervalAfterLunch; $i++) {
+        for ($i = 1; $i <= $intervalAfterLunch; $i++) {
             $interval[] = date("H:i:s", strtotime($request->ends_lunch) + $request->interval * 60 * $i);
         }
 

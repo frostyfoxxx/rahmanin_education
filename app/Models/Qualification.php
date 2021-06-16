@@ -15,8 +15,8 @@ class Qualification extends Model
         'ft_budget_quota',
         'rm_budget_quota',
         'working_profession',
-        'budget',
-        'commercial'
+        'rm_commercial',
+        'ft_commercial'
     ];
 
     /**
