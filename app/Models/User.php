@@ -78,4 +78,9 @@ class User extends Authenticatable
     }
 
 //AdditionalEducation
+
+    public function timerecording()
+    {
+        return $this->hasOne(RecordingTime::class, 'user_id', 'id');
+    }
 }

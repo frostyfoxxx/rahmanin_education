@@ -9,6 +9,7 @@ use App\Http\Resources\PassportResource;
 use App\Http\Resources\PersonalDataResource;
 use App\Http\Resources\QuotaResource;
 use App\Http\Resources\SchoolResource;
+use App\Http\Resources\TimeWindowStudentResource;
 use App\Models\AdditionalEducation;
 use App\Models\Appraisal;
 use App\Models\FirstParent;
@@ -518,13 +519,47 @@ class StudentController extends Controller
 
     }
 
-    public function getRecordingTime(Request $request)
+    public function getRecordingTime(Request $request) // TODO: Оттестить доступ секретаря
     {
-        return $time = RecordingTime::whereHas('getDate', function ($query) use ($request) {
-            $query->where('date_recording', $request->date_recording);
+        $user_role = auth('sanctum')->user()->roles[0]->slug;
+
+        $time = RecordingTime::whereHas('getDate', function ($query) use ($request) {
+            $query->where('date_recording', $request->date);
         })->get();
 
 
+        if ($time) {
+            switch ($user_role) {
+                case 'student':
+                    return response()->json([
+                        'data' => [
+                            'code' => 200,
+                            'message' => 'Временные окна найдены',
+                            'content' => TimeWindowStudentResource::collection($time)
+                        ]
+                    ]);
+                    break;
+                case 'admission-secretary':
+                    return response()->json([
+                        'data' => [
+                            'code' => 200,
+                            'message' => 'Временные окна найдены',
+                            'content' => $time
+                        ]
+                    ]);
+
+            }
+
+        } else {
+            return response()->json([
+                'error' => [
+                    'code' => 404,
+                    'message' => 'Временные окна на данную дату не найдены'
+                ]
+            ], 404);
+        }
     }
+
+
 
 }

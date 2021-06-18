@@ -22,4 +22,9 @@ class RecordingTime extends Model
     {
         return $this->belongsTo(RecordingDate::class, 'daterecording_id');
     }
+
+    public function users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

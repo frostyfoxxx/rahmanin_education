@@ -45,7 +45,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
     Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']); // Добавление данных о доп.образовании
     Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']); // Вывод данных о доп.образовании
     Route::post('/user/specialty', [StudentController::class, 'postQuota']); // Выбор специальности
-    Route::get('/user/timewindow', [StudentController::class, 'getRecordingTime']);
+    Route::get('/user/window', [StudentController::class, 'getRecordingTime']);
 });
 
 /*
