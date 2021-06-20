@@ -214,8 +214,29 @@ class EmployeeController extends Controller
         //Сотрудник: Картотека. Возврат документов
     }
 
-    public function DataConfirmed()
+    public function dataConfirmed($id)
     {
-        //Сотрудник: Картотека. Данные подтверждены.
+        $user = User::find($id);
+        if ($user->data_confirmed == null || $user->data_confirmed == false) {
+            $user->data_confirmed = true;
+            $user->save();
+
+            return response()->json([
+                'data' => [
+                    'code' => 200,
+                    'message' => "Данные этого пользователя подтверждены"
+                ]
+            ], 200);
+        } else {
+            $user->data_confirmed = false;
+            $user->save();
+
+            return response()->json([
+                'data' => [
+                    'code' => 200,
+                    'message' => "Подтверждение данных для этого пользователя сняты"
+                ]
+            ], 200);
+        }
     }
 }

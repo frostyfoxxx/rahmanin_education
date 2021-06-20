@@ -14,4 +14,10 @@ class SecondParent extends Model
     ];
 
     public $timestamps = true;
+
+    public function parents()
+    {
+        return $this->hasOne(Parents::class, 'second_parent_id', 'id');
+
+    }
 }

@@ -9,6 +9,7 @@ use App\Http\Resources\PassportResource;
 use App\Http\Resources\PersonalDataResource;
 use App\Http\Resources\QuotaResource;
 use App\Http\Resources\SchoolResource;
+use App\Http\Resources\TimeWindowSecretaryResource;
 use App\Http\Resources\TimeWindowStudentResource;
 use App\Models\AdditionalEducation;
 use App\Models\Appraisal;
@@ -204,7 +205,7 @@ class StudentController extends Controller
         $user = auth('sanctum')->user()->id;
 
 
-        School::updateOrCreate([
+        School::create([
             'school_name' => $request->school_name,
             'number_of_classes' => $request->number_of_classes,
             'year_of_ending' => $request->year_of_ending,
@@ -285,16 +286,24 @@ class StudentController extends Controller
         ], 201);
     }
 
-    public function getParent() // TODO: Пофиксить вывод родителей
+    /**
+     * @return JsonResponse
+     */
+    public function getParent(): JsonResponse
     {
 
         $user = auth('sanctum')->user()->id;
-//        $parents = Parents::whereHas($user, function ($query) {
-//            $query->where('first_parent_id');
-//        })->whereHas($user, function ($query) {
-//            $query->where('second_parent_id');
-//        })->get();
         $parent = Parents::where('user_id', $user)->first();
+
+        if (empty($parent)) {
+            return response()->json([
+                'error' => [
+                    'code' => 404,
+                    'message' => "Родители не добавлены. Пожалуйста, добавьте родителей"
+                ]
+            ], 404);
+        }
+
 
         $firstParent = FirstParent::find($parent->first_parent_id);
 
@@ -314,7 +323,7 @@ class StudentController extends Controller
                             'first_name' => $secondParent->first_name,
                             'middle_name' => $secondParent->middle_name,
                             'last_name' => $secondParent->last_name,
-                            'phone_number' => $secondParent->phone_number,
+                            'phone_number' => $secondParent->phoneNumber,
                         ]
                     ]
                 ]
@@ -463,13 +472,14 @@ class StudentController extends Controller
         ], 201);
 
     }
-
+    // TODO: Сделать проверку вводимых данных (форма обучения[Очная и зочная] и тип обучения[Бюджет и коммерция])
     public function postQuota(Request $request)
     {
         $validator = Validator::make($request->all(), [
             '*.code' => ['required', 'string', 'exists:specialty_classifiers,code'],
             '*.specialty' => ['required', 'string', 'exists:specialty_classifiers,specialty'],
-            '*.qualification' => ['required', 'string', 'exists:qualification_classifiers,qualification']
+            '*.qualification' => ['required', 'string', 'exists:qualification_classifiers,qualification'],
+            '*.form_education' => ['required', 'string']
         ]);
 
 
@@ -519,47 +529,40 @@ class StudentController extends Controller
 
     }
 
-    public function getRecordingTime(Request $request) // TODO: Оттестить доступ секретаря
+
+    public function postRecordingTime(Request $request)
     {
-        $user_role = auth('sanctum')->user()->roles[0]->slug;
-
-        $time = RecordingTime::whereHas('getDate', function ($query) use ($request) {
-            $query->where('date_recording', $request->date);
-        })->get();
-
-
-        if ($time) {
-            switch ($user_role) {
-                case 'student':
-                    return response()->json([
-                        'data' => [
-                            'code' => 200,
-                            'message' => 'Временные окна найдены',
-                            'content' => TimeWindowStudentResource::collection($time)
-                        ]
-                    ]);
-                    break;
-                case 'admission-secretary':
-                    return response()->json([
-                        'data' => [
-                            'code' => 200,
-                            'message' => 'Временные окна найдены',
-                            'content' => $time
-                        ]
-                    ]);
-
-            }
-
-        } else {
+        $time = RecordingTime::find($request->id);
+        if($time->user_id != null) {
             return response()->json([
                 'error' => [
-                    'code' => 404,
-                    'message' => 'Временные окна на данную дату не найдены'
+                    'code' => 403,
+                    'message' => "Данное временное окно уже занято"
                 ]
-            ], 404);
+            ],403);
         }
-    }
 
+        $user = RecordingTime::where('user_id', auth('sanctum')->user()->id)->first();
+
+        if(!empty($user)) {
+            return response()->json([
+                'error' => [
+                    'code' => 403,
+                    'message' => 'Вы не можете бронировать более одной записи'
+                ]
+            ],403);
+        }
+
+        $time->user_id = auth('sanctum')->user()->id;
+        $time->save();
+
+        return response()->json([
+            'data'=> [
+                'code' => 201,
+                'message' => "Временное окно успешно занято"
+            ]
+        ], 201);
+    }
 
 
 }

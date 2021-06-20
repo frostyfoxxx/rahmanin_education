@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SecretaryController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\RecordingTimeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +46,8 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
     Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']); // Добавление данных о доп.образовании
     Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']); // Вывод данных о доп.образовании
     Route::post('/user/specialty', [StudentController::class, 'postQuota']); // Выбор специальности
-    Route::get('/user/window', [StudentController::class, 'getRecordingTime']);
+    Route::get('/user/window', [RecordingTimeController::class, 'getRecordingTime']); // Вывод временных окон
+    Route::patch('/user/window', [StudentController::class, 'postRecordingTime']);
 });
 
 /*
@@ -75,15 +77,20 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], fun
     Route::get('admin/qualification', [SecretaryController::class, 'getQualification']); // Метод получения квалификаций по данной специальности
     Route::post('/admin/quota', [SecretaryController::class, 'postQualificationQuota']); // Добавление квот
     Route::post('/admin/timewindow', [SecretaryController::class, 'createRecording']); // Добавление временных окон
+    Route::get('/admin/timewindow', [RecordingTimeController::class, 'getRecordingTime']); // Вывод временных окон
+    Route::delete('/admin/timewindow', [SecretaryController::class, 'deleteWindow']); // Удаление временных окон
+    Route::get('admin/competition', [SecretaryController::class, 'competition']); // Конкурсная ведомость
+    Route::get('admin/statement', [SecretaryController::class, 'statement']);
 });
 
 /*
  * Методы сотрудника
  */
-//Route::group(['middleware' => ['auth:sanctum', 'role:admissions-officer']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'role:admissions-officer']], function () {
     Route::post('admin/cart', [EmployeeController::class, 'cart']);
     Route::get('admin/cart', [EmployeeController::class, 'getCart']);
-//});
+    Route::patch('admin/cart/{id}/access', [EmployeeController::class, 'dataConfirmed']);
+});
 
 /*
  * Готовые, но не интегрированные методы

@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CompetitionResource;
 use App\Http\Resources\QualificationClassifierResource;
 use App\Models\Qualification;
 use App\Models\QualificationClassifier;
 use App\Models\RecordingDate;
 use App\Models\RecordingTime;
 use App\Models\SpecialtyClassifier;
+use App\Models\UserQualification;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use function GuzzleHttp\Psr7\str;
+
 
 class SecretaryController extends Controller
 {
-    public function getCode()
+    /**
+     * @return JsonResponse
+     */
+    public function getCode(): JsonResponse
     {
         return response()->json([
             'data' => [
@@ -25,7 +31,11 @@ class SecretaryController extends Controller
         ], 200);
     }
 
-    public function getQualification(Request $request) // TODO: Сделать не через костыль
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getQualification(Request $request)
     {
         $qualification = QualificationClassifier::whereHas('getSpecialty', function (Builder $query) use ($request) {
             $query->where('code', '=', $request->code);
@@ -43,6 +53,10 @@ class SecretaryController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function postQualificationQuota(Request $request)
     {
 
@@ -86,6 +100,10 @@ class SecretaryController extends Controller
         ], 201);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function createRecording(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -105,6 +123,15 @@ class SecretaryController extends Controller
                     'errors' => $validator->errors()
                 ]
             ]);
+        }
+
+        if (!empty(RecordingDate::where('date_recording', $request->date_recording)->first())) {
+            return response()->json([
+                'error' => [
+                    'code' => 403,
+                    'message' => 'Временные окна на эту дату уже созданы'
+                ]
+            ], 403);
         }
 
 
@@ -136,6 +163,90 @@ class SecretaryController extends Controller
             ]);
         }
 
+        return response()->json([
+            'data' => [
+                'code' => 201,
+                'message' => "Временные окна успешно созданы"
+            ]
+        ], 201);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteWindow(Request $request)
+    {
+        RecordingTime::whereHas('getDate', function ($query) use ($request) {
+            $query->where('date_recording', $request->date);
+        })->delete();
+        RecordingDate::where('date_recording', $request->date)->delete();
+
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Временное окно успешно удалено'
+            ]
+        ], 200);
+    }
+
+    public function competition(Request $request)
+    {
+//
+//        $specialty = SpecialtyClassifier::select('id')->where('specialty', $request->specialty)->first();
+//        $qualification = QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
+//            $query->where('specialty', $request->specialty);
+//        })->where('qualification', $request->qualification)->first()->id;
+//        $qual = Qualification::where('qualification_classifier_id', QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
+//            $query->where('specialty', $request->specialty);
+//        })->where('qualification', $request->qualification)->first()->id)->first();
+
+
+        $users = UserQualification::where('qualification_id',
+            Qualification::where('qualification_classifier_id',
+                QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
+                    $query->where('specialty', $request->specialty);
+                })->where('qualification', $request->qualification)->first()->id)->first()->id)
+            ->where('type_education', $request->type_education)
+            ->where('form_education', $request->form_education)
+            ->orderByDesc('middlemark')
+            ->get();
+
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Пользователи для конкурсной ведомости найдены',
+                'content' => CompetitionResource::collection($users)
+            ]
+        ], 200);
 
     }
+    // TODO: Узнать у Рахманина про контрольные цифры и доделать
+    public function statement(Request $request)
+    {
+        $statement = UserQualification::where('form_education', $request->form_education)->orderBy('qualification_id')->get();
+
+        $array = [];
+
+        for ($i = $statement[0]->qualification_id; $i <= $statement[count($statement) - 1]->qualification_id; $i++) {
+
+            $qualification = QualificationClassifier::whereHas('qualification', function ($query) use ($i) {
+                $query->where('id', $i);
+            })->first()->qualification;
+
+            $count = 0;
+            for ($j = 0; $j < count($statement); $j++) {
+
+                if ($statement[$j]->qualification_id == $i) {
+                    $count++;
+                }
+            }
+            $array["$qualification"]['кол-во подданых заявлений'] = $count;
+        }
+
+        return $array;
+
+    }
+
+
 }

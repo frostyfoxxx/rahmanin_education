@@ -15,4 +15,10 @@ class FirstParent extends Model
         'first_name', 'middle_name', 'last_name', 'phoneNumber'
     ];
 
+    public function parents()
+    {
+        return $this->hasOne(Parents::class, 'first_parent_id', 'id');
+
+    }
+
 }

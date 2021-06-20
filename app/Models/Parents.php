@@ -10,26 +10,38 @@ class Parents extends Model
 {
     use HasFactory;
 
-
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'user_id',
         'first_parent_id',
         'second_parent_id'
     ];
 
-    public function user():BelongsTo
+
+    /**
+     * @return BelongsTo
+     */
+    public function user()
     {
         return $this->belongsTo(User::class, 'id', 'user_id');
     }
 
-    public function first_parent()
+    /**
+     * @return BelongsTo
+     */
+    public function firstParent()
     {
-        return $this->hasOne(FirstParent::class, 'id', 'first_parent_id');
+        return $this->belongsTo(FirstParent::class, 'first_parent_id');
     }
 
-    public function second_parent()
+    /**
+     * @return BelongsTo
+     */
+    public function secondParent()
     {
-        return $this->hasOne(SecondParent::class, 'id', 'second_parent_id');
+        return $this->belongsTo(SecondParent::class, 'second_parent_id');
     }
 
     public $timestamps = false;

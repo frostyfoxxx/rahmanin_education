@@ -14,4 +14,9 @@ class UserQualification extends Model
     protected $fillable = [
         'user_id', 'qualification_id', 'middlemark', 'form_education', 'type_education'
     ];
+
+    public function users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

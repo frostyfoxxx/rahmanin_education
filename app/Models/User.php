@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasRolesAndPermissions;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -54,7 +55,7 @@ class User extends Authenticatable
 //School
     public function PersonalData()
     {
-      return $this->hasOne(PersonalData::class);
+      return $this->hasOne(PersonalData::class, 'user_id', 'id');
     }
 //PersonalData
     public function Passport()
@@ -79,8 +80,16 @@ class User extends Authenticatable
 
 //AdditionalEducation
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function timerecording()
     {
         return $this->hasOne(RecordingTime::class, 'user_id', 'id');
+    }
+
+    public function userQualification()
+    {
+        return $this->hasMany(UserQualification::class, 'user_id', 'id');
     }
 }
