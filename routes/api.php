@@ -33,27 +33,31 @@ Route::post('/logout', [UsersController::class, 'logout']);
  * Методы абитуриента
  */
 Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
-    Route::post('/user/personal', [StudentController::class, 'postPersonalData']); // Добавление персональных данных
+
     Route::get('/user/personal', [StudentController::class, 'getPersonalData']); // Вывод персональных данных
-    Route::post('/user/passport', [StudentController::class, 'postPassportData']); //  Добавление паспортных данных
     Route::get('/user/passport', [StudentController::class, 'getPassportData']); // Вывод паспортных данных
-    Route::post('/user/school', [StudentController::class, 'postSchoolData']); // Добавление данных о школе
     Route::get('/user/school', [StudentController::class, 'getSchoolData']); // Вывод данных о школе
-    Route::post('/user/stuff', [StudentController::class, 'postAppraisalData']); // Добавление предметов аттестата
     Route::get('/user/stuff', [StudentController::class, 'getAppraisalData']); // Вывод предметов с оценками
-    Route::post('/user/parents', [StudentController::class, 'postParents']); // Добавление родителей
     Route::get('/user/parents', [StudentController::class, 'getParent']); // Вывод родителей
-    Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']); // Добавление данных о доп.образовании
     Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']); // Вывод данных о доп.образовании
-    Route::post('/user/specialty', [StudentController::class, 'postQuota']); // Выбор специальности
     Route::get('/user/window', [RecordingTimeController::class, 'getRecordingTime']); // Вывод временных окон
     Route::patch('/user/window', [StudentController::class, 'postRecordingTime']);
+
+    Route::group(['middleware' => ['confirmed:true']], function () {
+        Route::post('/user/personal', [StudentController::class, 'postPersonalData']);// Добавление персональных данных
+        Route::post('/user/passport', [StudentController::class, 'postPassportData']);//  Добавление паспортных данных
+        Route::post('/user/school', [StudentController::class, 'postSchoolData']);// Добавление данных о школе
+        Route::post('/user/stuff', [StudentController::class, 'postAppraisalData']);// Добавление предметов аттестата
+        Route::post('/user/parents', [StudentController::class, 'postParents']);// Добавление родителей
+        Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']);// Добавление данных о доп.образовании
+        Route::post('/user/specialty', [StudentController::class, 'postQuota']);// Выбор специальности
+    });
 });
 
 /*
  * Тестовый метод для мидлвейра ролей
 */
-Route::group(['middleware' =>['auth:sanctum', ]], function () {
+Route::group(['middleware' =>['auth:sanctum','confirmed:true']], function () {
     Route::get('/me', [UsersController::class, 'user']);
 
 });

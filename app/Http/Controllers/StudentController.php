@@ -70,6 +70,9 @@ class StudentController extends Controller
 
         $user = auth('sanctum')->user()->id;
 
+        /**
+         * Проверка на существование записи в БД с таким пользователем
+         */
         if (PersonalData::query()->where('user_id', '=', $user)->first()) {
             return response()->json([
                 'error' => [
@@ -140,6 +143,17 @@ class StudentController extends Controller
 
         $user = auth('sanctum')->user()->id;
 
+        /**
+         * Проверка на существование записи в БД с таким пользователем
+         */
+        if (Passport::query()->where('user_id', '=', $user)->first()) {
+            return response()->json([
+                'error' => [
+                    'code' => 400,
+                    'message' => 'Паспортные данные для этого пользователя уже созданы'
+                ]
+            ], 400);
+        }
 
         Passport::create([
             'series' => $request->series,
@@ -203,6 +217,18 @@ class StudentController extends Controller
         }
 
         $user = auth('sanctum')->user()->id;
+
+        /**
+         * Проверка на существование записи в БД с таким пользователем
+         */
+        if (School::query()->where('user_id', '=', $user)->first()) {
+            return response()->json([
+                'error' => [
+                    'code' => 400,
+                    'message' => 'Данные о школе для этого пользователя уже созданы'
+                ]
+            ], 400);
+        }
 
 
         School::create([
@@ -371,6 +397,19 @@ class StudentController extends Controller
         }
 
         $user = auth('sanctum')->user()->id;
+
+        /**
+         * Проверка на существование записи в БД с таким пользователем
+         */
+        if (count(School::query()->where('user_id', '=', $user)->get()) > 1) {
+            return response()->json([
+                'error' => [
+                    'code' => 400,
+                    'message' => 'Родители для этого пользователя уже созданы'
+                ]
+            ], 400);
+        }
+
         $fml = explode(' ', $request[0]['name']);
         $parent = [
             'first_name' => $fml[0],
@@ -452,9 +491,22 @@ class StudentController extends Controller
                 ]
             ], 422);
         }
+
         $id = auth('sanctum')->user()->id;
 
-        $additionalEducation = AdditionalEducation::create([
+        /**
+         * Проверка на существование записи в БД с таким пользователем
+         */
+        if (AdditionalEducation::query()->where('user_id', '=', $user)->first()) {
+            return response()->json([
+                'error' => [
+                    'code' => 400,
+                    'message' => 'Персональные данные для этого пользователя уже созданы'
+                ]
+            ], 400);
+        }
+
+        AdditionalEducation::create([
             'form_of_education' => $request->form_of_education,
             'name_of_educational_institution' => $request->name_of_educational_institution,
             'number_of_diploma' => $request->number_of_diploma,
@@ -495,15 +547,7 @@ class StudentController extends Controller
 
         $user = auth('sanctum')->user()->id;
 
-        $marks = Appraisal::where('user_id', $user)->get();
-        $middlemark = 0;
 
-        foreach ($marks as $mark) {
-            $middlemark += $mark->appraisal;
-            $mark->appraisal;
-        }
-
-        $middlemark = $middlemark / count($marks);
 
         foreach ($request->all() as $item) {
             $qualification = Qualification::whereHas('getQualificationClassifier', function ($query) use ($item) {
@@ -514,7 +558,7 @@ class StudentController extends Controller
             UserQualification::create([
                 'qualification_id' => $qualification->id,
                 'user_id' => $user,
-                'middlemark' => $middlemark,
+                'middlemark' => School::where('user_id', $user)->first()->middlemark,
                 'form_education' => $item['form_education'],
                 'type_education' => $item['type_education']
             ]);
