@@ -18,6 +18,7 @@ class PersonalDataResource extends JsonResource
             'first_name'=>$this->first_name,
             'middle_name'=>$this->middle_name,
             'last_name'=>$this->last_name,
+            'phone' => $this->phone,
             'orphan'=>$this->orphan,
             'childhood_disabled'=>$this->childhood_disabled,
             'the_large_family'=>$this->the_large_family,

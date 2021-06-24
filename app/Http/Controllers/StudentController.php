@@ -99,6 +99,48 @@ class StudentController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function patchPersonalData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'phone' => 'required|numeric|digits:11'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => $validator->errors(),
+                    'message' => 'Ошибка валидации'
+                ]
+            ], 422);
+        }
+
+        $user = auth('sanctum')->user()->id;
+
+        $PersonalData = PersonalData::where('user_id', $user)->first();
+
+        $PersonalData->first_name = $request->input('first_name');
+        $PersonalData->middle_name = $request->input('middle_name');
+        $PersonalData->last_name = $request->input('last_name');
+        $PersonalData->phone = $request->input('phone');
+        $PersonalData->save();
+
+        return response()->json([
+            'error' => [
+                'code' => 201,
+                'message' => 'Персональные данные обновлены'
+            ]
+        ], 200);
+
+
+    }
+
+    /**
      * @return JsonResponse
      */
     public function getPassportData(): JsonResponse
@@ -119,7 +161,6 @@ class StudentController extends Controller
      */
     public function postPassportData(Request $request): JsonResponse
     {
-
         $validator = Validator::make($request->all(), [
             'series' => 'required|string|max:4',
             'number' => 'required|string|max:6',
@@ -177,6 +218,58 @@ class StudentController extends Controller
 
 
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function patchPassportData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'series' => 'required|string|max:4',
+            'number' => 'required|string|max:6',
+            'date_of_issue' => 'required|date_format:Y-m-d',
+            'issued_by' => 'required|string|max:255',
+            'date_of_birth' => 'required|date_format:Y-m-d',
+            'male' => 'required|string|max:255',
+            'place_of_birth' => 'required|string|max:255',
+            'registration_address' => 'required|string|max:255',
+            'lack_of_citizenship' => 'required|boolean',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => $validator->errors(),
+                    'message' => 'Ошибка валидации'
+                ]
+            ], 422);
+        }
+
+        $user = auth('sanctum')->user()->id;
+
+        $passportData = Passport::where('user_id', $user)->first();
+
+        $passportData->series = $request->input('series');
+        $passportData->number = $request->input('number');
+        $passportData->date_of_issue = $request->input('date_of_issue');
+        $passportData->issued_by = $request->input('issued_by');
+        $passportData->date_of_birth = $request->input('date_of_birth');
+        $passportData->male = $request->input('male');
+        $passportData->place_of_birth = $request->input('place_of_birth');
+        $passportData->registration_address = $request->input('registration_address');
+        $passportData->lack_of_citizenship = $request->input('lack_of_citizenship');
+
+        $passportData->save();
+
+        return response()->json([
+            'error' => [
+                'code' => 200,
+                'message' => 'Паспортные данные изменены'
+            ]
+        ], 200);
+    }
+
 
     /**
      * @return JsonResponse
@@ -241,6 +334,43 @@ class StudentController extends Controller
 
         return response()->json([
             'data' => [
+                'code' => 201,
+                'message' => 'Данные о школе обновлены'
+            ]
+        ], 201);
+    }
+
+    public function patchSchoolData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'school_name' => 'required|string|max:255',
+            'number_of_classes' => 'required|integer',
+            'year_of_ending' => 'required|date_format:Y',
+            'number_of_certificate' => 'required|numeric|digits:14',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => $validator->errors(),
+                    'message' => 'Ошибка валидации'
+                ]
+            ], 422);
+        }
+
+        $user = auth('sanctum')->user()->id;
+
+        $schoolData = School::where('user_id', $user)->first();
+        $schoolData->school_name = $request->input('school_name');
+        $schoolData->number_of_classes = $request->input('number_of_classes');
+        $schoolData->year_of_ending = $request->input('year_of_ending');
+        $schoolData->number_of_certificate = $request->input('number_of_certificate');
+
+        $schoolData->save();
+
+        return response()->json([
+            'error' => [
                 'code' => 201,
                 'message' => 'Данные о школе обновлены'
             ]
@@ -492,7 +622,7 @@ class StudentController extends Controller
             ], 422);
         }
 
-        $id = auth('sanctum')->user()->id;
+        $user = auth('sanctum')->user()->id;
 
         /**
          * Проверка на существование записи в БД с таким пользователем
@@ -513,7 +643,7 @@ class StudentController extends Controller
             'year_of_ending' => $request->year_of_ending,
             'qualification' => $request->qualification,
             'specialty' => $request->specialty,
-            'user_id' => $id
+            'user_id' => $user
         ])->save();
 
         return response()->json([
@@ -523,6 +653,51 @@ class StudentController extends Controller
             ]
         ], 201);
 
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function patchAdditionalEducation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'form_of_education' => 'required|string|max:255',
+            'name_of_educational_institution' => 'required|string|max:255',
+            'number_of_diploma' => 'required|string|max:255',
+            'year_of_ending' => 'required|string|max:255',
+            'qualification' => 'required|string|max:255',
+            'specialty' => 'required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => $validator->errors(),
+                    'message' => 'Ошибка валидации'
+                ]
+            ], 422);
+        }
+
+        $user = auth('sanctum')->user()->id;
+
+        $Education = AdditionalEducation::where('user_id', $user)->first();
+
+        $Education->form_of_education = $request->input('form_of_education');
+        $Education->name_of_educational_institution = $request->input('name_of_educational_institution');
+        $Education->number_of_diploma = $request->input('number_of_diploma');
+        $Education->year_of_ending = $request->input('year_of_ending');
+        $Education->qualification = $request->input('qualification');
+        $Education->specialty = $request->input('specialty');
+
+        $Education->save();
+
+        return response()->json([
+            'error' => [
+                'code' => 201,
+                'message' => 'Данные о дополнительном образовании обновлены'
+            ]
+        ], 201);
     }
     // TODO: Сделать проверку вводимых данных (форма обучения[Очная и зочная] и тип обучения[Бюджет и коммерция])
     public function postQuota(Request $request)

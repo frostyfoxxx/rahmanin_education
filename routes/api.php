@@ -45,11 +45,15 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
 
     Route::group(['middleware' => ['confirmed:true']], function () {
         Route::post('/user/personal', [StudentController::class, 'postPersonalData']);// Добавление персональных данных
+        Route::patch('/user/personal', [StudentController::class, 'patchPersonalData']);// Обновление персональных данных
         Route::post('/user/passport', [StudentController::class, 'postPassportData']);//  Добавление паспортных данных
+        Route::patch('/user/passport', [StudentController::class, 'patchPassportData']); // Обновление паспортных данных
         Route::post('/user/school', [StudentController::class, 'postSchoolData']);// Добавление данных о школе
+        Route::patch('/user/school', [StudentController::class, 'patchSchoolData']); // Обновление данных о школе
         Route::post('/user/stuff', [StudentController::class, 'postAppraisalData']);// Добавление предметов аттестата
         Route::post('/user/parents', [StudentController::class, 'postParents']);// Добавление родителей
         Route::post('/user/education', [StudentController::class, 'postAdditionalEducation']);// Добавление данных о доп.образовании
+        Route::patch('/user/education', [StudentController::class, 'patchAdditionalEducation']); // Добавление данных о дополнительном образовании
         Route::post('/user/specialty', [StudentController::class, 'postQuota']);// Выбор специальности
     });
 });
@@ -93,7 +97,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], fun
 Route::group(['middleware' => ['auth:sanctum', 'role:admissions-officer']], function () {
     Route::post('admin/cart', [EmployeeController::class, 'cart']);
     Route::get('admin/cart', [EmployeeController::class, 'getCart']);
-    Route::patch('admin/cart/{id}/access', [EmployeeController::class, 'dataConfirmed']);
+    Route::patch('admin/cart/{id}/access', [EmployeeController::class, 'dataConfirmed']); // Данные подтверждены
 });
 
 /*
