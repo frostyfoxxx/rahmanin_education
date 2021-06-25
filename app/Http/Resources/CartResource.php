@@ -19,7 +19,7 @@ class CartResource extends JsonResource
             "middle_name" => $this->PersonalData->middle_name,
             "last_name" => $this->PersonalData->last_name,
             "middlemark" => $this->School->middlemark,
-            "data_confirmed" => $this->data_confirmed,
+            "data_confirmed" => ($this->data_confirmed == 1) ? true : false,
         ];
     }
 }

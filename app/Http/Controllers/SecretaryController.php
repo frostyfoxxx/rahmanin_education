@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CompetitionResource;
+use App\Http\Resources\EnrollmentResource;
 use App\Http\Resources\QualificationClassifierResource;
 use App\Models\Qualification;
 use App\Models\QualificationClassifier;
@@ -35,7 +36,7 @@ class SecretaryController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function getQualification(Request $request)
+    public function getQualification(Request $request) : JsonResponse
     {
         $qualification = QualificationClassifier::whereHas('getSpecialty', function (Builder $query) use ($request) {
             $query->where('code', '=', $request->code);
@@ -82,6 +83,15 @@ class SecretaryController extends Controller
         }
 
         $qualification = QualificationClassifier::where('qualification', $request->qualification)->first();
+
+        if (Qualification::where('qualification_classifier_id', $qualification->id)) {
+            return response()->json([
+                'error' => [
+                    'code' => 403,
+                    'message' => "Такая квота уже добавлена"
+                ]
+            ]);
+        }
 
         Qualification::create([
             "qualification_classifier_id" => $qualification->id,
@@ -192,16 +202,6 @@ class SecretaryController extends Controller
 
     public function competition(Request $request)
     {
-//
-//        $specialty = SpecialtyClassifier::select('id')->where('specialty', $request->specialty)->first();
-//        $qualification = QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
-//            $query->where('specialty', $request->specialty);
-//        })->where('qualification', $request->qualification)->first()->id;
-//        $qual = Qualification::where('qualification_classifier_id', QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
-//            $query->where('specialty', $request->specialty);
-//        })->where('qualification', $request->qualification)->first()->id)->first();
-
-
         $users = UserQualification::where('qualification_id',
             Qualification::where('qualification_classifier_id',
                 QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
@@ -232,7 +232,10 @@ class SecretaryController extends Controller
 
             $qualification = QualificationClassifier::whereHas('qualification', function ($query) use ($i) {
                 $query->where('id', $i);
-            })->first()->qualification;
+            })->first();
+
+            $specialty = SpecialtyClassifier::find($qualification->specialty_id);
+
 
             $count = 0;
             for ($j = 0; $j < count($statement); $j++) {
@@ -241,11 +244,31 @@ class SecretaryController extends Controller
                     $count++;
                 }
             }
-            $array["$qualification"]['кол-во подданых заявлений'] = $count;
+
+            $qualifications = $specialty->code . " / " . $specialty->specialty . " / " . $qualification->qualification;
+
+            $array["$qualifications"]['контрольные цифры'] = Qualification::where('qualification_classifier_id', $qualification->id)->first()->ft_budget_quota;
+            $array["$qualifications"]['кол-во подданых заявлений'] = $count;
+
         }
 
         return $array;
 
+    }
+
+    public function enrollment(Request $request)
+    {
+        $enrollment = UserQualification::where('qualification_id', Qualification::whereHas('getQualificationClassifier', function ($query) use ($request) {
+            $query->where('qualification', $request->qualification);
+        })->first()->id)->orderByDesc('middlemark')->get();
+
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => "Пользователи найдены",
+                'content' => EnrollmentResource::collection($enrollment)
+            ]
+        ]);
     }
 
 

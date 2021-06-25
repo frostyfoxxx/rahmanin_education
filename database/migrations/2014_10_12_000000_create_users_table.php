@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->boolean('stuff');
             $table->boolean('data_confirmed')->default(false);
+            $table->boolean('enrollment')->default(false);
             $table->timestamps();
         });
 

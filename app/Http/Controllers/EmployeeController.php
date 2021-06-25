@@ -18,6 +18,7 @@ use App\Models\SecondParent;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Psy\Util\Json;
 use function GuzzleHttp\Promise\all;
 
 class EmployeeController extends Controller
@@ -30,26 +31,42 @@ class EmployeeController extends Controller
         $this->users;
     }
 
-    public function getCart()
+    /**
+     * @return JsonResponse
+     */
+    public function getAllCart() : JsonResponse
     {
         return response()->json([
             'data' => [
                 'code' => 200,
                 'message' => "Students has been founded",
-                'content' => CartResource::collection(User::where('stuff', false)->get())
+                'content' => CartResource::collection(User::where('stuff', false)->get()),
+                'notConfirmed' => User::where('data_confirmed', false)->where('stuff', false)->count()
             ]
-        ],200);
-    }
-    //Сотрудник: Картотека. Добавление абитуриента
-    public function cart(Request $request)
-    {
-//        $this->AddUser($request->all());
-//        $this->AddPassport($request->all());
-//        $this->AddPersonalDataUser($request->all());
-//        $this->AddSchool($request->all());
-//        $this->addParents($request->parents);
-//        $this->addEducation($request-
+        ], 200);
 
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getNotConfirmedCart() : JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Студенты с не подтверждеными данными найдены',
+                'content' => CartResource::collection(User::where('data_confirmed', false)->where('stuff', false)->get())
+            ]
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function cart(Request $request) : JsonResponse
+    {
         $validator = Validator::make($request->all(), [
             'phone_number' => 'required|string|max:11',
             'email' => 'required|string',
@@ -183,7 +200,7 @@ class EmployeeController extends Controller
         }
 
 
-        AdditionalEducation::create( [
+        AdditionalEducation::create([
             'form_of_education' => $request->education['form_of_education'],
             'name_of_educational_institution' => $request->education['name_of_educational_institution'],
             'number_of_diploma' => $request->education['number_of_diploma'],
@@ -194,8 +211,6 @@ class EmployeeController extends Controller
         ]);
 
 
-
-
         return response()->json([
             'data' => [
                 'code' => 201,
@@ -204,9 +219,9 @@ class EmployeeController extends Controller
         ], 201);
     }
 
-    public function DeleteUsers()
+    public function DeleteUsers($id)
     {
-        //Сотрудник: Картотека. Удаление пользователя
+        $user = User::find($id);
     }
 
     public function ReturnDocu()

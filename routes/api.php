@@ -89,6 +89,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], fun
     Route::delete('/admin/timewindow', [SecretaryController::class, 'deleteWindow']); // Удаление временных окон
     Route::get('admin/competition', [SecretaryController::class, 'competition']); // Конкурсная ведомость
     Route::get('admin/statement', [SecretaryController::class, 'statement']);
+    Route::get('admin/enrollment', [SecretaryController::class, 'enrollment']);
 });
 
 /*
@@ -96,7 +97,8 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admission-secretary']], fun
  */
 Route::group(['middleware' => ['auth:sanctum', 'role:admissions-officer']], function () {
     Route::post('admin/cart', [EmployeeController::class, 'cart']);
-    Route::get('admin/cart', [EmployeeController::class, 'getCart']);
+    Route::get('admin/confirmedcart', [EmployeeController::class, 'getNotConfirmedCart']);
+    Route::get('admin/cart', [EmployeeController::class, 'getAllCart']);
     Route::patch('admin/cart/{id}/access', [EmployeeController::class, 'dataConfirmed']); // Данные подтверждены
 });
 
