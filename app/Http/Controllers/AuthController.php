@@ -11,8 +11,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-class UsersController extends Controller
+class AuthController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function signUp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -36,9 +40,9 @@ class UsersController extends Controller
             return response()->json([
                 'error' => [
                     'code' => 422,
-                    'message' => "The user with this number or email address is already registered"
+                    'message' => "Пользователь с таким телефоном и/или e-mail уже зарегистрирован"
                 ]
-            ], 402);
+            ], 422);
         }
 
         $user = User::create([
@@ -54,11 +58,15 @@ class UsersController extends Controller
         return response()->json([
             'data' => [
                 'code' => 201,
-                'message' => "Users has been created"
+                'message' => "Пользователь успешно создан"
             ]
         ], 201);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function signIn(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -95,15 +103,22 @@ class UsersController extends Controller
                 'code' => 200,
                 'message' => "Аутентифицирован",
             ]
-        ])->withCookie($cookie);
+        ], 200)->withCookie($cookie);
 
     }
 
+    /**
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
     public function user()
     {
         return auth('sanctum')->user();
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
         $cookie = Cookie::forget('jwt');

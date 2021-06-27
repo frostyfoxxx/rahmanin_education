@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UsersController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SecretaryController;
@@ -23,11 +23,11 @@ use App\Http\Controllers\RecordingTimeController;
 /*
  * Методы общедоступные всем
  */
-Route::post('/signup', [UsersController::class, 'signUp']); // Регистрация
-Route::post('/auth', [UsersController::class, 'signIn']); // Авторизация
+Route::post('/signup', [AuthController::class, 'signUp']); // Регистрация
+Route::post('/auth', [AuthController::class, 'signIn']); // Авторизация
 Route::get('/quota', [\App\Http\Controllers\QualificationController::class, 'getQualificationQuota']); // Получение квот
 Route::post('/admin-reg', [\App\Http\Controllers\AdminController::class, 'createAdmin']); // Временный метод создания админа
-Route::post('/logout', [UsersController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 /*
  * Методы абитуриента
@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
  * Тестовый метод для мидлвейра ролей
 */
 Route::group(['middleware' =>['auth:sanctum','confirmed:true']], function () {
-    Route::get('/me', [UsersController::class, 'user']);
+    Route::get('/me', [AuthController::class, 'user']);
 
 });
 

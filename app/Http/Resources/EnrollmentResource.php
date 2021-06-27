@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
-use App\Models\User;
+use App\Models\PersonalData;
+
+use App\Models\School;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class EnrollmentResource extends JsonResource
@@ -15,36 +17,41 @@ class EnrollmentResource extends JsonResource
      */
     public function toArray($request)
     {
-        $disabled = null;
-        $user = User::find($this->user_id);
-        if ($user->PersonalData->orphan) { // 1 0 0
-            $disabled = "Сирота";
-        }
-        if ($user->PersonalData->childhood_disabled) { // 0 1 0
-            $disabled = "Инвалид детства";
-        }
-        if ($user->PersonalData->the_large_family) { // 0 0 1
-            $disabled = "Многодетная семья";
-        }
-        if ($user->PersonalData->orphan && $user->PersonalData->childhood_disabled && !$user->PersonalData->the_large_family) { // 1 1 0
-            $disabled = "Сирота; Инвалид детства";
-        }
-        if ($user->PersonalData->orphan && $user->PersonalData->the_large_family && !$user->PersonalData->childhood_disabled) { // 1 0 1
-            $disabled = "Сирота; Многодетная семья";
-        }
-        if ($user->PersonalData->childhood_disabled && $user->PersonalData->the_large_family && !$user->PersonalData->orphan) { // 0 1 1
-            $disabled = "Инвалид детства; Многодетная семья";
-        }
-        if ($user->PersonalData->orphan && $user->PersonalData->the_large_family && $user->PersonalData->childhood_disabled) {
-            $disabled = "Сирота; Инвалид детства; Многодетная семья";
+        $user = PersonalData::where('user_id', $this->user_id)->first();
+
+        switch ($user) {
+            case $user->orphan:
+                $disabled = "Сирота";
+                break;
+            case $user->childhood_disabled:
+                $disabled = "Инвалид детства";
+                break;
+            case $user->the_large_family:
+                $disabled = "Многодетная семья";
+                break;
+            case $user->orphan && $user->childhood_disabled && !$user->the_large_family:
+                $disabled = "Сирота; Инвалид детства";
+                break;
+            case $user->orphan && $user->the_large_family && !$user->childhood_disabled:
+                $disabled = "Сирота; Многодетная семья";
+                break;
+            case $user->childhood_disabled && $user->the_large_family && !$user->orphan:
+                $disabled = "Инвалид детства; Многодетная семья";
+                break;
+            case $user->orphan && $user->the_large_family && $user->childhood_disabled:
+                $disabled = "Сирота; Инвалид детства; Многодетная семья";
+                break;
+            default:
+                $disabled = null;
         }
 
         return [
-            "first_name" =>$user->PersonalData->first_name,
-            "middle_name" => $user->PersonalData->middle_name,
-            "last_name" => $user->PersonalData->last_name,
-            "middlemark" => $user->School->middlemark,
+            "first_name" => $user->first_name,
+            "middle_name" => $user->middle_name,
+            "last_name" => $user->last_name,
+            "middlemark" => School::where('user_id', $this->user_id)->first()->middlemark,
             'disabled' => $disabled
         ];
     }
 }
+
