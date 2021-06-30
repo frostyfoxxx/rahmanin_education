@@ -699,6 +699,7 @@ class StudentController extends Controller
             ]
         ], 201);
     }
+
     // TODO: Сделать проверку вводимых данных (форма обучения[Очная и зочная] и тип обучения[Бюджет и коммерция])
     public function postQuota(Request $request)
     {
@@ -720,8 +721,28 @@ class StudentController extends Controller
             ]);
         }
 
+
         $user = auth('sanctum')->user()->id;
 
+        $count = UserQualification::where('user_id', $user)->count();
+
+        if ($count >= 2) {
+            return response()->json([
+                'error' => [
+                    'code' => 401,
+                    'message' => "Вы уже выбрали специальности"
+                ]
+            ], 401);
+        }
+
+        if ($count + count($request->all()) > 2) {
+            return response()->json([
+                "error" => [
+                    'code' => 401,
+                    'message' => "Вы можете добавить только одну специальность"
+                ]
+            ], 401);
+        }
 
 
         foreach ($request->all() as $item) {
@@ -729,6 +750,16 @@ class StudentController extends Controller
                 $query->where('qualification', $item['qualification']);
             })->first();
 
+            if ($quota = UserQualification::where('user_id', $user)->first()) {
+                if ($quota->qualification_id == $qualification->id) {
+                    return response()->json([
+                        "error" => [
+                            "code" => 401,
+                            "message" => "ВЫ уже выбирали данную специальность"
+                        ]
+                    ], 401);
+                }
+            }
 
             UserQualification::create([
                 'qualification_id' => $qualification->id,
@@ -752,31 +783,31 @@ class StudentController extends Controller
     public function postRecordingTime(Request $request)
     {
         $time = RecordingTime::find($request->id);
-        if($time->user_id != null) {
+        if ($time->user_id != null) {
             return response()->json([
                 'error' => [
                     'code' => 403,
                     'message' => "Данное временное окно уже занято"
                 ]
-            ],403);
+            ], 403);
         }
 
         $user = RecordingTime::where('user_id', auth('sanctum')->user()->id)->first();
 
-        if(!empty($user)) {
+        if (!empty($user)) {
             return response()->json([
                 'error' => [
                     'code' => 403,
                     'message' => 'Вы не можете бронировать более одной записи'
                 ]
-            ],403);
+            ], 403);
         }
 
         $time->user_id = auth('sanctum')->user()->id;
         $time->save();
 
         return response()->json([
-            'data'=> [
+            'data' => [
                 'code' => 201,
                 'message' => "Временное окно успешно занято"
             ]

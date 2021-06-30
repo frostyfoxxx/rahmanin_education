@@ -36,7 +36,7 @@ class SecretaryController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function getQualification(Request $request) : JsonResponse
+    public function getQualification(Request $request): JsonResponse
     {
         $qualification = QualificationClassifier::whereHas('getSpecialty', function (Builder $query) use ($request) {
             $query->where('code', '=', $request->code);
@@ -84,14 +84,17 @@ class SecretaryController extends Controller
 
         $qualification = QualificationClassifier::where('qualification', $request->qualification)->first();
 
-        if (Qualification::where('qualification_classifier_id', $qualification->id)) {
-            return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => "Такая квота уже добавлена"
-                ]
-            ]);
-        }
+
+
+
+        if (Qualification::where('qualification_classifier_id', $qualification->id)->first()) {
+        return response()->json([
+            'error' => [
+                'code' => 403,
+                'message' => "Такая квота уже добавлена"
+            ]
+        ], 403);
+    }
 
         Qualification::create([
             "qualification_classifier_id" => $qualification->id,
@@ -221,6 +224,7 @@ class SecretaryController extends Controller
         ], 200);
 
     }
+
     // TODO: Узнать у Рахманина про контрольные цифры и доделать
     public function statement(Request $request)
     {
