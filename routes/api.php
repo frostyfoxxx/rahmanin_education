@@ -41,7 +41,8 @@ Route::group(['middleware' => ['auth:sanctum', 'role:student']], function () {
     Route::get('/user/parents', [StudentController::class, 'getParent']); // Вывод родителей
     Route::get('/user/education', [StudentController::class, 'getAdditionalEducation']); // Вывод данных о доп.образовании
     Route::get('/user/window', [RecordingTimeController::class, 'getRecordingTime']); // Вывод временных окон
-    Route::patch('/user/window', [StudentController::class, 'postRecordingTime']);
+    Route::patch('/user/window', [StudentController::class, 'postRecordingTime']);  // Выбор временных окон
+    Route::get('/user/specialty', [StudentController::class, 'getChosenSpecialty']); //Вывод выбранных специальностей
 
     Route::group(['middleware' => ['confirmed:true']], function () {
         Route::post('/user/personal', [StudentController::class, 'postPersonalData']);// Добавление персональных данных

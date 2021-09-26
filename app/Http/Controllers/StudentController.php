@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AdditionalEducationResource;
 use App\Http\Resources\AppraisalResource;
+use App\Http\Resources\ChosenSpecialtyResource;
 use App\Http\Resources\ParentResource;
 use App\Http\Resources\PassportResource;
 use App\Http\Resources\PersonalDataResource;
@@ -21,12 +22,11 @@ use App\Models\Qualification;
 use App\Models\RecordingTime;
 use App\Models\School;
 use App\Models\SecondParent;
-use App\Models\User;
 use App\Models\UserQualification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Builder;
+
 
 
 class StudentController extends Controller
@@ -34,14 +34,25 @@ class StudentController extends Controller
     /**
      * @return JsonResponse
      */
-    public function getPersonalData(): JsonResponse
+    public function getPersonalData()
     {
         $user = auth('sanctum')->user()->id;
+
+        $user = PersonalData::where('user_id', 2)->get();
+        if ($user->isEmpty()) {
+            return response()->json([
+                'data' => [
+                    'code' => 400,
+                    'message' => "Данные для этого пользователя не найдены"
+                ]
+            ]);
+        }
+
         return response()->json([
             'data' => [
                 'code' => 200,
                 'message' => 'Полученные данные',
-                'content' => PersonalDataResource::collection(PersonalData::where('user_id', $user)->get()),
+                'content' => PersonalDataResource::collection($user),
             ]
         ], 200);
     }
@@ -58,6 +69,7 @@ class StudentController extends Controller
             'last_name' => 'required|string|max:255',
             'phone' => 'required|numeric|digits:11'
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'error' => [
@@ -93,7 +105,7 @@ class StudentController extends Controller
         return response()->json([
             'data' => [
                 'code' => 201,
-                'message' => "Information update"
+                'message' => "Персональные данные добавлены"
             ],
         ], 201);
     }
@@ -136,21 +148,29 @@ class StudentController extends Controller
                 'message' => 'Персональные данные обновлены'
             ]
         ], 200);
-
-
     }
 
     /**
      * @return JsonResponse
      */
-    public function getPassportData(): JsonResponse
+    public function getPassportData()
     {
         $user = auth('sanctum')->user()->id;
+
+        if (!empty($user = Passport::where('user_id', $user)->get())) {
+            return response()->json([
+                'data' => [
+                    'code' => 400,
+                    'message' => "Данные для этого пользователя не найдены"
+                ]
+            ]);
+        }
+
         return response()->json([
             'data' => [
                 'code' => 200,
                 'message' => 'Полученные данные',
-                'content' => PassportResource::collection(Passport::where('user_id', $user)->get()),
+                'content' => PassportResource::collection($user),
             ]
         ], 200);
     }
@@ -215,8 +235,6 @@ class StudentController extends Controller
                 'message' => "Информация о паспортных данных обновлена"
             ]
         ], 201);
-
-
     }
 
     /**
@@ -396,7 +414,7 @@ class StudentController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function postAppraisalData(Request $request): JsonResponse
+    public function postAppraisalData(Request $request)
     {
         $validator = Validator::make($request->all(), [
             '*.subject' => 'required|string|max:255',
@@ -415,10 +433,27 @@ class StudentController extends Controller
 
         $user = auth('sanctum')->user()->id;
 
-        foreach ($request->all() as $item) {
-            $item['user_id'] = $user;
-            Appraisal::create($item);
+        $appraisal = Appraisal::select('subject')->where('user_id', $user)->get();
+        $chosenSubject = [];
+        for ($i = 0; $i < count($appraisal); $i++) {
+            $chosenSubject[$i] = $appraisal[$i]->subject;
         }
+        
+        foreach ($request->all() as $item) {
+            for ($i = 0; $i < count($chosenSubject); $i++) {
+                if($chosenSubject[$i] === $item['subject']) {
+                    return response()->json([
+                        'data' => [
+                            'code' => 400,
+                            'message' => 'Такой предмет уже добавлен'
+                        ]
+                    ], 400);
+                }
+            }
+            $item['user_id'] = $user;
+            // Appraisal::create($item);
+        }
+        die();
 
         $appraisal = Appraisal::where('user_id', $user)->get();
 
@@ -501,8 +536,6 @@ class StudentController extends Controller
             ]
 
         ], 200);
-
-
     }
 
     /**
@@ -579,7 +612,6 @@ class StudentController extends Controller
                 'message' => 'Данные о родителях добавлены'
             ]
         ], 201);
-
     }
 
     /**
@@ -652,7 +684,6 @@ class StudentController extends Controller
                 "message" => "Данные о доп.образовании добавлены"
             ]
         ], 201);
-
     }
 
     /**
@@ -726,23 +757,23 @@ class StudentController extends Controller
 
         $count = UserQualification::where('user_id', $user)->count();
 
-        if ($count >= 2) {
-            return response()->json([
-                'error' => [
-                    'code' => 401,
-                    'message' => "Вы уже выбрали специальности"
-                ]
-            ], 401);
-        }
+        // if ($count >= 2) {
+        //     return response()->json([
+        //         'error' => [
+        //             'code' => 401,
+        //             'message' => "Вы уже выбрали специальности"
+        //         ]
+        //     ], 401);
+        // }
 
-        if ($count + count($request->all()) > 2) {
-            return response()->json([
-                "error" => [
-                    'code' => 401,
-                    'message' => "Вы можете добавить только одну специальность"
-                ]
-            ], 401);
-        }
+        // if ($count + count($request->all()) > 2) {
+        //     return response()->json([
+        //         "error" => [
+        //             'code' => 401,
+        //             'message' => "Вы можете добавить только одну специальность"
+        //         ]
+        //     ], 401);
+        // }
 
 
         foreach ($request->all() as $item) {
@@ -750,16 +781,16 @@ class StudentController extends Controller
                 $query->where('qualification', $item['qualification']);
             })->first();
 
-            if ($quota = UserQualification::where('user_id', $user)->first()) {
-                if ($quota->qualification_id == $qualification->id) {
-                    return response()->json([
-                        "error" => [
-                            "code" => 401,
-                            "message" => "ВЫ уже выбирали данную специальность"
-                        ]
-                    ], 401);
-                }
-            }
+            // if ($quota = UserQualification::where('user_id', $user)->first()) {
+            //     if ($quota->qualification_id == $qualification->id) {
+            //         return response()->json([
+            //             "error" => [
+            //                 "code" => 401,
+            //                 "message" => "ВЫ уже выбирали данную специальность"
+            //             ]
+            //         ], 401);
+            //     }
+            // }
 
             UserQualification::create([
                 'qualification_id' => $qualification->id,
@@ -768,7 +799,12 @@ class StudentController extends Controller
                 'form_education' => $item['form_education'],
                 'type_education' => $item['type_education']
             ]);
+            $lastMiddlemark = UserQualification::select('middlemark')->where('qualification_id', '=', $qualification->id)->orderBy('middlemark')->limit($qualification->ft_budget_quota)->first()->middlemark;
+
+            $qualification->average_score_invite = $lastMiddlemark;
+            $qualification->save();
         }
+
 
         return response()->json([
             'data' => [
@@ -776,7 +812,6 @@ class StudentController extends Controller
                 'message' => 'Специальности добавлены',
             ]
         ], 201);
-
     }
 
 
@@ -814,5 +849,26 @@ class StudentController extends Controller
         ], 201);
     }
 
+    public function getChosenSpecialty()
+    {
+        $user = auth('sanctum')->user()->id;
 
+        $user = UserQualification::where('user_id', $user)->get();
+        if ($user->isEmpty()) {
+            return response()->json([
+                'data' => [
+                    'code' => 400,
+                    'message' => "Данные для этого пользователя не найдены"
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'code' => 200,
+                'message' => 'Выбранные специальности получены',
+                'content' => ChosenSpecialtyResource::collection($user)
+            ]
+        ], 200);
+    }
 }
