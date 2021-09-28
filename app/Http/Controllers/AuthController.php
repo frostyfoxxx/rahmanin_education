@@ -94,7 +94,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-
+        $role = auth('sanctum')->user()->roles[0]->slug;
         $token = $user->createToken('token')->plainTextToken;
         $cookie = cookie('jwt', $token, 60 * 24 * 7); // 7 day
 
@@ -102,6 +102,7 @@ class AuthController extends Controller
             'data' => [
                 'code' => 200,
                 'message' => "Аутентифицирован",
+                'role' => $role,
             ]
         ], 200)->withCookie($cookie);
 
