@@ -38,7 +38,7 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
 
-        $user = PersonalData::where('user_id', 2)->get();
+        $user = PersonalData::where('user_id', $user)->get();
         if ($user->isEmpty()) {
             return response()->json([
                 'data' => [
@@ -157,7 +157,8 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
 
-        if (!empty($user = Passport::where('user_id', $user)->get())) {
+        $user = Passport::where('user_id', $user)->get();
+        if ($user->isEmpty()) {
             return response()->json([
                 'data' => [
                     'code' => 400,

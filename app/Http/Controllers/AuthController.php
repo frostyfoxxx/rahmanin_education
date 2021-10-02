@@ -20,29 +20,29 @@ class AuthController extends Controller
     public function signUp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => ['required', 'string', 'max:11'],
-            'email' => ['required', 'string'],
+            'phone_number' => ['required', 'string', 'digits:11'],
+            'email' => ['required', 'string', 'email'],
             'password' => ['required']
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ]
+
+                'code' => 422,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+
             ], 422);
         }
 
         $user = User::query()->where('phone_number', '=', $request->input('phone_number'))->orWhere('email', '=' . $request->input('email'))->first();
         if ($user) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => "Пользователь с таким телефоном и/или e-mail уже зарегистрирован"
-                ]
-            ], 422);
+
+                'code' => 400,
+                'message' => "Пользователь с таким телефоном и/или e-mail уже зарегистрирован"
+
+            ], 400);
         }
 
         $user = User::create([
@@ -56,10 +56,10 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            'data' => [
+            
                 'code' => 201,
                 'message' => "Пользователь успешно создан"
-            ]
+            
         ], 201);
     }
 
@@ -85,12 +85,12 @@ class AuthController extends Controller
         }
 
         if (!Auth::attempt($request->all())) {
-           return response()->json([
-               'error' => [
-                   'code' => 401,
-                   "message" => 'This user not register'
-               ]
-           ], Response::HTTP_UNAUTHORIZED );
+            return response()->json([
+                'error' => [
+                    'code' => 401,
+                    "message" => 'This user not register'
+                ]
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
@@ -104,8 +104,7 @@ class AuthController extends Controller
                 'message' => "Аутентифицирован",
                 'role' => $role,
             ]
-        ], 200)->withCookie($cookie);
-
+        ], 200)->withHeaders(['Authorization' => 'Bearer ' . $token]);
     }
 
     /**
