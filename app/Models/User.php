@@ -3,16 +3,15 @@
 namespace App\Models;
 
 use App\Traits\HasRolesAndPermissions;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, hasRolesAndPermissions;
+    use HasFactory, Notifiable, HasApiTokens, hasRolesAndPermissions, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +46,10 @@ class User extends Authenticatable
     ];
 
     public $timestamps = false;
+
+    public static $logAttributes = ['email', 'phone_number', 'stuff'];
+    public static $logName = 'Пользователь регистрация/авторизация';
+
 //<------------------------------------------------------------------------------------------------------------------------->
     public function School()
     {

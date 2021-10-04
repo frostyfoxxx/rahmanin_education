@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class QualificationClassifier extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'qualification_classifiers';
 
@@ -15,6 +16,11 @@ class QualificationClassifier extends Model
         'specialty_id', 'qualification'
     ];
 
+    public static $logAttributes = [
+        'qualification'
+    ];
+
+    public static $logName = 'Классификатор квалификации';
 
     public function getSpecialty()
     {

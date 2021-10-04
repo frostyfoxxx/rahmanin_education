@@ -12,7 +12,8 @@
         "laravel/framework": "^8.40",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "phpoffice/phpword": "^0.18.2"
+        "phpoffice/phpword": "^0.18.2",
+        "spatie/laravel-activitylog": "^3.17"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

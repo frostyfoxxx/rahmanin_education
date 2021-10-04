@@ -28,7 +28,6 @@ class CreateParentTable extends Migration
             $table->string('last_name');
             $table->string('phoneNumber');
             $table->timestamps();
-
         });
         Schema::create('parents', function (Blueprint $table) {
             $table->id();
@@ -49,8 +48,8 @@ class CreateParentTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('parent');
         Schema::dropIfExists('first_parents');
         Schema::dropIfExists('second_parents');
-        Schema::dropIfExists('parent');
     }
 }

@@ -27,7 +27,6 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-
                 'code' => 422,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
@@ -56,10 +55,10 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            
-                'code' => 201,
-                'message' => "Пользователь успешно создан"
-            
+
+            'code' => 201,
+            'message' => "Пользователь успешно создан"
+
         ], 201);
     }
 
@@ -94,9 +93,10 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
         $role = auth('sanctum')->user()->roles[0]->slug;
         $token = $user->createToken('token')->plainTextToken;
-        $cookie = cookie('jwt', $token, 60 * 24 * 7); // 7 day
+        // $cookie = cookie('jwt', $token, 60 * 24 * 7); // 7 day (For cookie)
 
         return response()->json([
             'data' => [
