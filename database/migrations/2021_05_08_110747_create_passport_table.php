@@ -20,7 +20,7 @@ class CreatePassportTable extends Migration
             $table->date('date_of_issue');
             $table->string('issued_by');
             $table->date('date_of_birth');
-            $table->string('male');
+            $table->string('gender');
             $table->string('place_of_birth');
             $table->string('registration_address');
             $table->boolean('lack_of_citizenship');
