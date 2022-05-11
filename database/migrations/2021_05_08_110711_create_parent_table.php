@@ -34,9 +34,9 @@ class CreateParentTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('first_parent_id');
             $table->unsignedBigInteger('second_parent_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('first_parent_id')->references('id')->on('first_parents');
-            $table->foreign('second_parent_id')->references('id')->on('second_parents');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('first_parent_id')->references('id')->on('first_parents')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('second_parent_id')->references('id')->on('second_parents')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

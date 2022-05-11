@@ -14,12 +14,12 @@ class Passport extends Model
     public $timestamps = true;
     public $fillable = [
         'series', 'number', 'date_of_issue', 'issued_by', 'date_of_birth',
-        'male', 'place_of_birth', 'registration_address', 'lack_of_citizenship', 'user_id'
+        'gender', 'place_of_birth', 'registration_address', 'lack_of_citizenship', 'user_id'
     ];
 
     public static $logAttributes = [
         'series', 'number', 'date_of_issue', 'issued_by', 'date_of_birth',
-        'male', 'place_of_birth', 'registration_address', 'lack_of_citizenship'
+        'gender', 'place_of_birth', 'registration_address', 'lack_of_citizenship'
     ];
     public static $logName = 'Паспортные данные ';
 

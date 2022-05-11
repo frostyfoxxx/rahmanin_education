@@ -20,7 +20,7 @@ class PassportResource extends JsonResource
             'date_of_issue'=>$this->date_of_issue,
             'issued_by'=>$this->issued_by,
             'date_of_birth'=>$this->date_of_birth,
-            'male'=>$this->male,
+            'gender'=>$this->gender,
             'place_of_birth'=>$this->place_of_birth,
             'lack_of_citizenship'=>($this->lack_of_citizenship ===  1) ? true : false,
         ];

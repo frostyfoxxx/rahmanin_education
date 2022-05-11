@@ -17,10 +17,10 @@ class AdminController extends Controller
     {
         $options = Options::find(1);
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Information has been founded',
-                'content' => [
+            'code' => 200,
+            'message' => 'Информация найдена',
+            'content' => [
+                [
                     'name' => $options->name_education,
                     'name_short' => $options->name_short,
                     'region' => $options->region,
@@ -32,25 +32,38 @@ class AdminController extends Controller
 
     public function postInfoEducation(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'name_short' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'region' => 'required|numeric',
+            'director_name' => 'required|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+            ], 422);
+        }
+
         Options::create([
             'name_education' => $request->name,
             'name_short' => $request->name_short,
             'region' => $request->region,
-            'address_education'=> $request->address,
+            'address_education' => $request->address,
             'director_name' => $request->director_name,
         ]);
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Basic information about the educational institution created'
-            ]
+            'code' => 201,
+            'message' => 'Базовая информация об образовательном учреждении добавлена'
         ], 201);
     }
 
     public function AdminCreateUser(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'middle_name' => 'required|string|max:255',
@@ -65,11 +78,9 @@ class AdminController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ]
+                'code' => 422,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
             ], 422);
         }
 
@@ -90,34 +101,26 @@ class AdminController extends Controller
         $count = count($request->modules);
 
         for ($i = 0; $i < $count; $i++) {
-
             $user->roles()->attach(Role::where('name', $request->modules[$i]['root'])->first());
             $user->save();
         }
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => "Сотрудник создан"
-            ]
+            'code' => 201,
+            'message' => "Сотрудник создан"
         ], 201);
-
-
     }
 
     public function CreateRole(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:50',
             'slug' => 'required|max:50',
 
         ]);
         $user = Role::create([
-
             'name' => $request->input('name'),
             'slug' => $request->input('slug'),
-
         ]);
         $user->save();
         return response()->json([
@@ -126,7 +129,6 @@ class AdminController extends Controller
                 'message' => "Роль создана"
             ]
         ], 201);
-
     }
 
     public function createAdmin(Request $request)
@@ -140,10 +142,8 @@ class AdminController extends Controller
         $user->save();
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Профиль администратора создан'
-            ]
+            'code' => 201,
+            'message' => 'Профиль администратора создан'
         ], 201);
     }
 }

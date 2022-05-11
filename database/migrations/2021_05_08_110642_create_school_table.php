@@ -24,7 +24,7 @@ class CreateSchoolTable extends Migration
             $table->string('version_of_the_certificate')->nullable();
             $table->float('middlemark')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

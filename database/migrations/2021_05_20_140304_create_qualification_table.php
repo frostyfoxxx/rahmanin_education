@@ -23,7 +23,9 @@ class CreateQualificationTable extends Migration
             $table->boolean('rm_commercial')->comment('Коммерция на заочном');
             $table->double('average_score_invite')->nullable();
             $table->timestamps();
-            $table->foreign('qualification_classifier_id')->references('id')->on('qualification_classifiers');
+            $table->foreign('qualification_classifier_id')->references('id')->on(
+                'qualification_classifiers'
+            )->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

@@ -24,7 +24,7 @@ class CreatePersonalDataTable extends Migration
             $table->string('the_large_family')->nullable();
             $table->string('hostel_for_students')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

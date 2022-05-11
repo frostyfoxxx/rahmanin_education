@@ -21,8 +21,8 @@ class CreateUserQualificationsTable extends Migration
             $table->double('middlemark')->nullable();
             $table->string('form_education');
             $table->string('type_education')->comment('Бюджет/Коммерция');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('qualification_id')->references('id')->on('qualifications');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('qualification_id')->references('id')->on('qualifications')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

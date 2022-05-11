@@ -8,6 +8,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SecretaryController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\RecordingTimeController;
+use App\Http\Controllers\QualificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,10 +26,9 @@ use App\Http\Controllers\RecordingTimeController;
  */
 Route::post('/signup', [AuthController::class, 'signUp']); // Регистрация
 Route::post('/auth', [AuthController::class, 'signIn']); // Авторизация
-Route::get('/quota', [\App\Http\Controllers\QualificationController::class, 'getQualificationQuota']); // Получение квот
-Route::post('/admin-reg', [\App\Http\Controllers\AdminController::class, 'createAdmin']); // Временный метод создания админа
-Route::post('/logout', [AuthController::class, 'logout']);
-
+Route::get('/quota', [QualificationController::class, 'getQualificationQuota']); // Получение квот
+Route::post('/admin-reg', [AdminController::class, 'createAdmin']); // Временный метод создания админа
+Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum']);
 /*
  * Методы абитуриента
  */
@@ -101,6 +101,8 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admissions-officer']], func
     Route::get('admin/confirmedcart', [EmployeeController::class, 'getNotConfirmedCart']);
     Route::get('admin/cart', [EmployeeController::class, 'getAllCart']);
     Route::patch('admin/cart/{id}/access', [EmployeeController::class, 'dataConfirmed']); // Данные подтверждены
+    Route::delete('admin/cart/{id}/delete', [EmployeeController::class, 'deleteUser']); // Удаление абитуриента
+    Route::patch('admin/cart/{id}/cancel', [EmployeeController::class, 'cancelUser']); // Возврат документов
 });
 
 /*

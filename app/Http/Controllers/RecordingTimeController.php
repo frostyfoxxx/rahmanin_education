@@ -26,30 +26,22 @@ class RecordingTimeController extends Controller
             switch ($user_role) {
                 case 'student':
                     return response()->json([
-                        'data' => [
-                            'code' => 200,
-                            'message' => 'Временные окна найдены',
-                            'content' => TimeWindowStudentResource::collection($time)
-                        ]
+                        'code' => 200,
+                        'message' => 'Временные окна найдены',
+                        'content' => TimeWindowStudentResource::collection($time)
                     ]);
                     break;
                 case 'admission-secretary':
                     return response()->json([
-                        'data' => [
-                            'code' => 200,
-                            'message' => 'Временные окна найдены',
-                            'content' => TimeWindowSecretaryResource::collection($time)
-                        ]
+                        'code' => 200,
+                        'message' => 'Временные окна найдены',
+                        'content' => TimeWindowSecretaryResource::collection($time)
                     ]);
-
             }
-
         } else {
             return response()->json([
-                'error' => [
-                    'code' => 404,
-                    'message' => 'Временные окна на данную дату не найдены'
-                ]
+                'code' => 404,
+                'message' => 'Временные окна на данную дату не найдены'
             ], 404);
         }
     }

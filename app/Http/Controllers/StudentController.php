@@ -27,8 +27,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
-
 class StudentController extends Controller
 {
     /**
@@ -41,19 +39,16 @@ class StudentController extends Controller
         $user = PersonalData::where('user_id', $user)->get();
         if ($user->isEmpty()) {
             return response()->json([
-                'data' => [
-                    'code' => 400,
-                    'message' => "Данные для этого пользователя не найдены"
-                ]
+                'code' => 400,
+                'message' => "Данные для этого пользователя не найдены"
+
             ]);
         }
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Полученные данные',
-                'content' => PersonalDataResource::collection($user),
-            ]
+            'code' => 200,
+            'message' => 'Полученные данные',
+            'content' => PersonalDataResource::collection($user),
         ], 200);
     }
 
@@ -72,11 +67,9 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
             ], 422);
         }
 
@@ -87,10 +80,8 @@ class StudentController extends Controller
          */
         if (PersonalData::query()->where('user_id', '=', $user)->first()) {
             return response()->json([
-                'error' => [
-                    'code' => 400,
-                    'message' => 'Персональные данные для этого пользователя уже созданы'
-                ]
+                'code' => 400,
+                'message' => 'Персональные данные для этого пользователя уже созданы'
             ], 400);
         }
 
@@ -103,10 +94,8 @@ class StudentController extends Controller
         ]);
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => "Персональные данные добавлены"
-            ],
+            'code' => 201,
+            'message' => "Персональные данные добавлены"
         ], 201);
     }
 
@@ -124,11 +113,11 @@ class StudentController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+
             ], 422);
         }
 
@@ -143,10 +132,10 @@ class StudentController extends Controller
         $PersonalData->save();
 
         return response()->json([
-            'error' => [
-                'code' => 201,
-                'message' => 'Персональные данные обновлены'
-            ]
+
+            'code' => 201,
+            'message' => 'Персональные данные обновлены'
+
         ], 200);
     }
 
@@ -160,19 +149,19 @@ class StudentController extends Controller
         $user = Passport::where('user_id', $user)->get();
         if ($user->isEmpty()) {
             return response()->json([
-                'data' => [
-                    'code' => 400,
-                    'message' => "Данные для этого пользователя не найдены"
-                ]
+
+                'code' => 400,
+                'message' => "Данные для этого пользователя не найдены"
+
             ]);
         }
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Полученные данные',
-                'content' => PassportResource::collection($user),
-            ]
+
+            'code' => 200,
+            'message' => 'Полученные данные',
+            'content' => PassportResource::collection($user),
+
         ], 200);
     }
 
@@ -188,18 +177,18 @@ class StudentController extends Controller
             'date_of_issue' => 'required|date_format:Y-m-d',
             'issued_by' => 'required|string|max:255',
             'date_of_birth' => 'required|date_format:Y-m-d',
-            'male' => 'required|string|max:255',
+            'gender' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
             'registration_address' => 'required|string|max:255',
             'lack_of_citizenship' => 'required|boolean',
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+
             ], 422);
         }
 
@@ -210,10 +199,10 @@ class StudentController extends Controller
          */
         if (Passport::query()->where('user_id', '=', $user)->first()) {
             return response()->json([
-                'error' => [
-                    'code' => 400,
-                    'message' => 'Паспортные данные для этого пользователя уже созданы'
-                ]
+
+                'code' => 400,
+                'message' => 'Паспортные данные для этого пользователя уже созданы'
+
             ], 400);
         }
 
@@ -223,7 +212,7 @@ class StudentController extends Controller
             'date_of_issue' => $request->date_of_issue,
             'issued_by' => $request->issued_by,
             'date_of_birth' => $request->date_of_birth,
-            'male' => $request->male,
+            'gender' => $request->gender,
             'place_of_birth' => $request->place_of_birth,
             'registration_address' => $request->registration_address,
             'lack_of_citizenship' => $request->lack_of_citizenship,
@@ -231,10 +220,10 @@ class StudentController extends Controller
         ]);
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => "Информация о паспортных данных обновлена"
-            ]
+
+            'code' => 201,
+            'message' => "Информация о паспортных данных добавлена"
+
         ], 201);
     }
 
@@ -250,18 +239,18 @@ class StudentController extends Controller
             'date_of_issue' => 'required|date_format:Y-m-d',
             'issued_by' => 'required|string|max:255',
             'date_of_birth' => 'required|date_format:Y-m-d',
-            'male' => 'required|string|max:255',
+            'gender' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
             'registration_address' => 'required|string|max:255',
             'lack_of_citizenship' => 'required|boolean',
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+
             ], 422);
         }
 
@@ -274,7 +263,7 @@ class StudentController extends Controller
         $passportData->date_of_issue = $request->input('date_of_issue');
         $passportData->issued_by = $request->input('issued_by');
         $passportData->date_of_birth = $request->input('date_of_birth');
-        $passportData->male = $request->input('male');
+        $passportData->gender = $request->input('gender');
         $passportData->place_of_birth = $request->input('place_of_birth');
         $passportData->registration_address = $request->input('registration_address');
         $passportData->lack_of_citizenship = $request->input('lack_of_citizenship');
@@ -282,11 +271,11 @@ class StudentController extends Controller
         $passportData->save();
 
         return response()->json([
-            'error' => [
-                'code' => 200,
-                'message' => 'Паспортные данные изменены'
-            ]
-        ], 200);
+
+            'code' => 201,
+            'message' => 'Паспортные данные изменены'
+
+        ], 201);
     }
 
 
@@ -297,11 +286,11 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Полученные данные',
-                'content' => SchoolResource::collection(School::where('user_id', $user)->get())
-            ]
+
+            'code' => 200,
+            'message' => 'Полученные данные',
+            'content' => SchoolResource::collection(School::where('user_id', $user)->get())
+
         ], 200);
     }
 
@@ -320,11 +309,11 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+
             ], 422);
         }
 
@@ -335,10 +324,10 @@ class StudentController extends Controller
          */
         if (School::query()->where('user_id', '=', $user)->first()) {
             return response()->json([
-                'error' => [
-                    'code' => 400,
-                    'message' => 'Данные о школе для этого пользователя уже созданы'
-                ]
+
+                'code' => 400,
+                'message' => 'Данные о школе для этого пользователя уже созданы'
+
             ], 400);
         }
 
@@ -352,10 +341,10 @@ class StudentController extends Controller
         ]);
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Данные о школе обновлены'
-            ]
+
+            'code' => 201,
+            'message' => 'Данные о школе добавлены'
+
         ], 201);
     }
 
@@ -370,11 +359,11 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+
             ], 422);
         }
 
@@ -389,10 +378,10 @@ class StudentController extends Controller
         $schoolData->save();
 
         return response()->json([
-            'error' => [
-                'code' => 201,
-                'message' => 'Данные о школе обновлены'
-            ]
+
+            'code' => 201,
+            'message' => 'Данные о школе обновлены'
+
         ], 201);
     }
 
@@ -403,11 +392,11 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Полученные данные',
-                'content' => AppraisalResource::collection(Appraisal::where('user_id', $user)->get())
-            ]
+
+            'code' => 200,
+            'message' => 'Полученные данные',
+            'content' => AppraisalResource::collection(Appraisal::where('user_id', $user)->get())
+
         ], 200);
     }
 
@@ -424,11 +413,9 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
             ], 422);
         }
 
@@ -439,22 +426,18 @@ class StudentController extends Controller
         for ($i = 0; $i < count($appraisal); $i++) {
             $chosenSubject[$i] = $appraisal[$i]->subject;
         }
-        
+
         foreach ($request->all() as $item) {
-            for ($i = 0; $i < count($chosenSubject); $i++) {
-                if($chosenSubject[$i] === $item['subject']) {
-                    return response()->json([
-                        'data' => [
-                            'code' => 400,
-                            'message' => 'Такой предмет уже добавлен'
-                        ]
-                    ], 400);
-                }
+            if (in_array($item['subject'], $chosenSubject)) {
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'Такой предмет уже добавлен'
+                ], 400);
             }
+
             $item['user_id'] = $user;
-            // Appraisal::create($item);
+            Appraisal::create($item);
         }
-        die();
 
         $appraisal = Appraisal::where('user_id', $user)->get();
 
@@ -471,10 +454,8 @@ class StudentController extends Controller
 
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Предметы с оценками добавлены'
-            ]
+            'code' => 201,
+            'message' => 'Предметы с оценками добавлены'
         ], 201);
     }
 
@@ -483,16 +464,13 @@ class StudentController extends Controller
      */
     public function getParent(): JsonResponse
     {
-
         $user = auth('sanctum')->user()->id;
         $parent = Parents::where('user_id', $user)->first();
 
         if (empty($parent)) {
             return response()->json([
-                'error' => [
-                    'code' => 404,
-                    'message' => "Родители не добавлены. Пожалуйста, добавьте родителей"
-                ]
+                'code' => 404,
+                'message' => "Родители не добавлены. Пожалуйста, добавьте родителей"
             ], 404);
         }
 
@@ -501,29 +479,7 @@ class StudentController extends Controller
 
         if ($secondParent = SecondParent::find($parent->second_parent_id)) {
             return response()->json([
-                'data' => [
-                    'code' => 200,
-                    'message' => "Родители найдены",
-                    'content' => [
-                        [
-                            'first_name' => $firstParent->first_name,
-                            'middle_name' => $firstParent->middle_name,
-                            'last_name' => $firstParent->last_name,
-                            'phone_number' => $firstParent->phoneNumber,
-                        ],
-                        [
-                            'first_name' => $secondParent->first_name,
-                            'middle_name' => $secondParent->middle_name,
-                            'last_name' => $secondParent->last_name,
-                            'phone_number' => $secondParent->phoneNumber,
-                        ]
-                    ]
-                ]
-            ], 200);
-        }
 
-        return response()->json([
-            'data' => [
                 'code' => 200,
                 'message' => "Родители найдены",
                 'content' => [
@@ -532,9 +488,31 @@ class StudentController extends Controller
                         'middle_name' => $firstParent->middle_name,
                         'last_name' => $firstParent->last_name,
                         'phone_number' => $firstParent->phoneNumber,
+                    ],
+                    [
+                        'first_name' => $secondParent->first_name,
+                        'middle_name' => $secondParent->middle_name,
+                        'last_name' => $secondParent->last_name,
+                        'phone_number' => $secondParent->phoneNumber,
                     ]
                 ]
+
+            ], 200);
+        }
+
+        return response()->json([
+
+            'code' => 200,
+            'message' => "Родители найдены",
+            'content' => [
+                [
+                    'first_name' => $firstParent->first_name,
+                    'middle_name' => $firstParent->middle_name,
+                    'last_name' => $firstParent->last_name,
+                    'phone_number' => $firstParent->phoneNumber,
+                ]
             ]
+
 
         ], 200);
     }
@@ -552,11 +530,9 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка запроса'
-                ]
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка запроса'
             ], 422);
         }
 
@@ -565,12 +541,10 @@ class StudentController extends Controller
         /**
          * Проверка на существование записи в БД с таким пользователем
          */
-        if (count(School::query()->where('user_id', '=', $user)->get()) > 1) {
+        if (count(Parents::query()->where('user_id', '=', $user)->get()) > 1) {
             return response()->json([
-                'error' => [
-                    'code' => 400,
-                    'message' => 'Родители для этого пользователя уже созданы'
-                ]
+                'code' => 400,
+                'message' => 'Родители для этого пользователя уже созданы'
             ], 400);
         }
 
@@ -608,10 +582,8 @@ class StudentController extends Controller
         }
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Данные о родителях добавлены'
-            ]
+            'code' => 201,
+            'message' => 'Данные о родителях добавлены'
         ], 201);
     }
 
@@ -622,11 +594,9 @@ class StudentController extends Controller
     {
         $user = auth('sanctum')->user()->id;
         return response()->json([
-            'items' => [
-                'item' => AdditionalEducationResource::collection(AdditionalEducation::where('user_id', $user)->get()),
-                'code' => 200,
-                'message' => 'Получены данные',
-            ]
+            'content' => AdditionalEducationResource::collection(AdditionalEducation::where('user_id', $user)->get()),
+            'code' => 200,
+            'message' => 'Получены данные',
         ], 200);
     }
 
@@ -647,11 +617,9 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
             ], 422);
         }
 
@@ -662,10 +630,8 @@ class StudentController extends Controller
          */
         if (AdditionalEducation::query()->where('user_id', '=', $user)->first()) {
             return response()->json([
-                'error' => [
-                    'code' => 400,
-                    'message' => 'Персональные данные для этого пользователя уже созданы'
-                ]
+                'code' => 400,
+                'message' => 'Данные о дополнительном образовании для этого пользователя уже созданы'
             ], 400);
         }
 
@@ -680,10 +646,10 @@ class StudentController extends Controller
         ])->save();
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                "message" => "Данные о доп.образовании добавлены"
-            ]
+
+            'code' => 201,
+            "message" => "Данные о доп.образовании добавлены"
+
         ], 201);
     }
 
@@ -703,32 +669,32 @@ class StudentController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => $validator->errors(),
-                    'message' => 'Ошибка валидации'
-                ]
+
+                'code' => 422,
+                'errors' => $validator->errors(),
+                'message' => 'Ошибка валидации'
+
             ], 422);
         }
 
         $user = auth('sanctum')->user()->id;
 
-        $Education = AdditionalEducation::where('user_id', $user)->first();
+        $education = AdditionalEducation::where('user_id', $user)->first();
 
-        $Education->form_of_education = $request->input('form_of_education');
-        $Education->name_of_educational_institution = $request->input('name_of_educational_institution');
-        $Education->number_of_diploma = $request->input('number_of_diploma');
-        $Education->year_of_ending = $request->input('year_of_ending');
-        $Education->qualification = $request->input('qualification');
-        $Education->specialty = $request->input('specialty');
+        $education->form_of_education = $request->input('form_of_education');
+        $education->name_of_educational_institution = $request->input('name_of_educational_institution');
+        $education->number_of_diploma = $request->input('number_of_diploma');
+        $education->year_of_ending = $request->input('year_of_ending');
+        $education->qualification = $request->input('qualification');
+        $education->specialty = $request->input('specialty');
 
-        $Education->save();
+        $education->save();
 
         return response()->json([
-            'error' => [
-                'code' => 201,
-                'message' => 'Данные о дополнительном образовании обновлены'
-            ]
+
+            'code' => 201,
+            'message' => 'Данные о дополнительном образовании обновлены'
+
         ], 201);
     }
 
@@ -745,11 +711,16 @@ class StudentController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Ошибка валидации',
-                    'errors' => $validator->errors()
-                ]
+                'code' => 422,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        if (count($request->all()) > 2) {
+            return response()->json([
+                'code' => 400,
+                'message' => 'Выбрано более двух специальностей'
             ]);
         }
 
@@ -758,23 +729,20 @@ class StudentController extends Controller
 
         $count = UserQualification::where('user_id', $user)->count();
 
-        // if ($count >= 2) {
-        //     return response()->json([
-        //         'error' => [
-        //             'code' => 401,
-        //             'message' => "Вы уже выбрали специальности"
-        //         ]
-        //     ], 401);
-        // }
+        if ($count >= 2) {
+            return response()->json([
+                'code' => 400,
+                'message' => "Вы уже выбрали специальности"
 
-        // if ($count + count($request->all()) > 2) {
-        //     return response()->json([
-        //         "error" => [
-        //             'code' => 401,
-        //             'message' => "Вы можете добавить только одну специальность"
-        //         ]
-        //     ], 401);
-        // }
+            ], 400);
+        }
+
+        if ($count + count($request->all()) > 2) {
+            return response()->json([
+                'code' => 400,
+                'message' => "Вы можете добавить только одну специальность"
+            ], 400);
+        }
 
 
         foreach ($request->all() as $item) {
@@ -782,16 +750,14 @@ class StudentController extends Controller
                 $query->where('qualification', $item['qualification']);
             })->first();
 
-            // if ($quota = UserQualification::where('user_id', $user)->first()) {
-            //     if ($quota->qualification_id == $qualification->id) {
-            //         return response()->json([
-            //             "error" => [
-            //                 "code" => 401,
-            //                 "message" => "ВЫ уже выбирали данную специальность"
-            //             ]
-            //         ], 401);
-            //     }
-            // }
+            if ($quota = UserQualification::where('user_id', $user)->first()) {
+                if ($quota->qualification_id == $qualification->id) {
+                    return response()->json([
+                        "code" => 400,
+                        "message" => "Вы уже выбрали данную специальность"
+                    ], 400);
+                }
+            }
 
             UserQualification::create([
                 'qualification_id' => $qualification->id,
@@ -800,7 +766,13 @@ class StudentController extends Controller
                 'form_education' => $item['form_education'],
                 'type_education' => $item['type_education']
             ]);
-            $lastMiddlemark = UserQualification::select('middlemark')->where('qualification_id', '=', $qualification->id)->orderBy('middlemark')->limit($qualification->ft_budget_quota)->first()->middlemark;
+            $lastMiddlemark = UserQualification::select('middlemark')->where(
+                'qualification_id',
+                '=',
+                $qualification->id
+            )->whereHas('users', function ($query) {
+                $query->where('reject', '!=', true);
+            })->orderBy('middlemark')->limit($qualification->ft_budget_quota)->first()->middlemark;
 
             $qualification->average_score_invite = $lastMiddlemark;
             $qualification->save();
@@ -808,10 +780,8 @@ class StudentController extends Controller
 
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => 'Специальности добавлены',
-            ]
+            'code' => 201,
+            'message' => 'Специальности добавлены',
         ], 201);
     }
 
@@ -821,10 +791,8 @@ class StudentController extends Controller
         $time = RecordingTime::find($request->id);
         if ($time->user_id != null) {
             return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => "Данное временное окно уже занято"
-                ]
+                'code' => 403,
+                'message' => "Данное временное окно уже занято"
             ], 403);
         }
 
@@ -832,21 +800,18 @@ class StudentController extends Controller
 
         if (!empty($user)) {
             return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => 'Вы не можете бронировать более одной записи'
-                ]
-            ], 403);
+                'code' => 403,
+                'message' => 'Вы не можете бронировать более одной записи'            ], 403);
         }
 
         $time->user_id = auth('sanctum')->user()->id;
         $time->save();
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => "Временное окно успешно занято"
-            ]
+
+            'code' => 201,
+            'message' => "Временное окно успешно занято"
+
         ], 201);
     }
 
@@ -857,19 +822,17 @@ class StudentController extends Controller
         $user = UserQualification::where('user_id', $user)->get();
         if ($user->isEmpty()) {
             return response()->json([
-                'data' => [
-                    'code' => 400,
-                    'message' => "Данные для этого пользователя не найдены"
-                ]
+                'code' => 400,
+                'message' => "Данные для этого пользователя не найдены"
             ]);
         }
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Выбранные специальности получены',
-                'content' => ChosenSpecialtyResource::collection($user)
-            ]
+
+            'code' => 200,
+            'message' => 'Выбранные специальности получены',
+            'content' => ChosenSpecialtyResource::collection($user)
+
         ], 200);
     }
 }

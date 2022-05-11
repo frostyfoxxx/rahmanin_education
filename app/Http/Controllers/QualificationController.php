@@ -17,11 +17,9 @@ class QualificationController extends Controller
     public function getQualificationQuota()
     {
         return response()->json([
-            'data' => [
                 'code' => 200,
                 'message' => "Квоты получены",
                 'content' => QuotaResource::collection(Qualification::all())
-            ]
         ], 200);
     }
 }

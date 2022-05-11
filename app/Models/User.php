@@ -23,7 +23,9 @@ class User extends Authenticatable
         'email',
         'password',
         'stuff',
-        'data_confirmed'
+        'data_confirmed',
+        'enrollment',
+        'reject'
     ];
 
     /**

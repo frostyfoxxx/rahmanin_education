@@ -23,4 +23,9 @@ class UserQualification extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function getQualification()
+    {
+        return $this->hasMany(Qualification::class, 'qualification_id', 'id');
+    }
 }

@@ -17,7 +17,7 @@ class CreateQualificationClassifier extends Migration
             $table->id();
             $table->unsignedBigInteger('specialty_id');
             $table->string('qualification');
-            $table->foreign('specialty_id')->references('id')->on('specialty_classifiers');
+            $table->foreign('specialty_id')->references('id')->on('specialty_classifiers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });;
     }

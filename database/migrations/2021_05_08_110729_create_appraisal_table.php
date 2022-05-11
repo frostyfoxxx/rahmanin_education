@@ -18,7 +18,7 @@ class CreateAppraisalTable extends Migration
             $table->string('subject');
             $table->integer('appraisal');
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

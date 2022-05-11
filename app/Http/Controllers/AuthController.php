@@ -30,17 +30,17 @@ class AuthController extends Controller
                 'code' => 422,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
-
             ], 422);
         }
 
-        $user = User::query()->where('phone_number', '=', $request->input('phone_number'))->orWhere('email', '=' . $request->input('email'))->first();
+        $user = User::query()
+            ->where('phone_number', '=', $request->input('phone_number'))
+            ->orWhere('email', '=', $request->input('email'))
+            ->first();
         if ($user) {
             return response()->json([
-
                 'code' => 400,
                 'message' => "Пользователь с таким телефоном и/или e-mail уже зарегистрирован"
-
             ], 400);
         }
 
@@ -55,10 +55,8 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-
             'code' => 201,
             'message' => "Пользователь успешно создан"
-
         ], 201);
     }
 
@@ -75,35 +73,35 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ]
+                'code' => 422,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
             ], 422);
         }
 
         if (!Auth::attempt($request->all())) {
             return response()->json([
-                'error' => [
-                    'code' => 401,
-                    "message" => 'This user not register'
-                ]
+                'code' => 401,
+                "message" => 'Ошибка логина и/или пароля'
+
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
+        if ($user->reject == true) {
+            return response()->json([
+                'code' => 403,
+                'message' => 'Доступ запрещен'
+            ], 403);
+        }
 
         $role = auth('sanctum')->user()->roles[0]->slug;
         $token = $user->createToken('token')->plainTextToken;
-        // $cookie = cookie('jwt', $token, 60 * 24 * 7); // 7 day (For cookie)
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => "Аутентифицирован",
-                'role' => $role,
-            ]
+            'code' => 200,
+            'message' => "Аутентифицирован",
+            'role' => $role
         ], 200)->withHeaders(['Authorization' => 'Bearer ' . $token]);
     }
 
@@ -121,13 +119,11 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $cookie = Cookie::forget('jwt');
-
+        $request->user()->currentAccessToken()->delete();
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Logout success'
-            ]
-        ])->withCookie($cookie);
+            'code' => 200,
+            'message' => 'Успешный выход'
+
+        ], 200);
     }
 }

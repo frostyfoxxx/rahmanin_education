@@ -21,7 +21,7 @@ class CreateRcordingtimeTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('daterecording_id')->references('id')->on('recordingdates');
+            $table->foreign('daterecording_id')->references('id')->on('recordingdates')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

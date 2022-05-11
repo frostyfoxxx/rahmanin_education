@@ -12,6 +12,7 @@ use App\Models\RecordingTime;
 use App\Models\SpecialtyClassifier;
 use App\Models\UserQualification;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -25,10 +26,8 @@ class SecretaryController extends Controller
     public function getCode(): JsonResponse
     {
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'content' => SpecialtyClassifier::all('code')
-            ]
+            'code' => 200,
+            'content' => SpecialtyClassifier::all('code')
         ], 200);
     }
 
@@ -44,12 +43,10 @@ class SecretaryController extends Controller
 
         $specialty = SpecialtyClassifier::where('code', $request->code)->first();
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'content' => [
-                    'specialty' => $specialty->specialty,
-                    'qualifications' => QualificationClassifierResource::collection($qualification)
-                ]
+            'code' => 200,
+            'content' => [
+                'specialty' => $specialty->specialty,
+                'qualifications' => QualificationClassifierResource::collection($qualification)
             ]
         ]);
     }
@@ -60,7 +57,6 @@ class SecretaryController extends Controller
      */
     public function postQualificationQuota(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             "code" => ['required', 'string', 'exists:specialty_classifiers,code'],
             "specialty" => ['required', 'string', 'exists:specialty_classifiers,specialty'],
@@ -74,27 +70,21 @@ class SecretaryController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => "Ошбика валидации",
-                    "errors" => $validator->errors()
-                ]
+                'code' => 422,
+                'message' => "Ошбика валидации",
+                "errors" => $validator->errors()
             ]);
         }
 
         $qualification = QualificationClassifier::where('qualification', $request->qualification)->first();
 
 
-
-
         if (Qualification::where('qualification_classifier_id', $qualification->id)->first()) {
-        return response()->json([
-            'error' => [
+            return response()->json([
                 'code' => 403,
                 'message' => "Такая квота уже добавлена"
-            ]
-        ], 403);
-    }
+            ], 403);
+        }
 
         Qualification::create([
             "qualification_classifier_id" => $qualification->id,
@@ -106,10 +96,8 @@ class SecretaryController extends Controller
         ]);
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => "Квота создана"
-            ]
+            'code' => 201,
+            'message' => "Квота создана"
         ], 201);
     }
 
@@ -130,33 +118,32 @@ class SecretaryController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => "Ошибка валидации",
-                    'errors' => $validator->errors()
-                ]
+                'code' => 422,
+                'message' => "Ошибка валидации",
+                'errors' => $validator->errors()
             ]);
         }
 
         if (!empty(RecordingDate::where('date_recording', $request->date_recording)->first())) {
             return response()->json([
-                'error' => [
-                    'code' => 403,
-                    'message' => 'Временные окна на эту дату уже созданы'
-                ]
-            ], 403);
+                'code' => 400,
+                'message' => 'Временные окна на эту дату уже созданы'
+            ], 400);
         }
 
 
-        $intervalBeforeLunch = (strtotime($request->start_lunch) - strtotime($request->time_start)) / ($request->interval * 60);
+        $intervalBeforeLunch = (strtotime($request->start_lunch) - strtotime(
+                    $request->time_start
+                )) / ($request->interval * 60);
 
-        $intervalAfterLunch = (strtotime($request->time_ends) - strtotime($request->ends_lunch)) / ($request->interval * 60);
+        $intervalAfterLunch = (strtotime($request->time_ends) - strtotime(
+                    $request->ends_lunch
+                )) / ($request->interval * 60);
 
         $interval = [];
 
         for ($i = 1; $i <= $intervalBeforeLunch; $i++) {
             $interval[] = date("H:i:s", strtotime($request->time_start) + $request->interval * 60 * $i);
-
         }
 
         for ($i = 1; $i <= $intervalAfterLunch; $i++) {
@@ -177,10 +164,8 @@ class SecretaryController extends Controller
         }
 
         return response()->json([
-            'data' => [
-                'code' => 201,
-                'message' => "Временные окна успешно созданы"
-            ]
+            'code' => 201,
+            'message' => "Временные окна успешно созданы"
         ], 201);
     }
 
@@ -196,44 +181,46 @@ class SecretaryController extends Controller
         RecordingDate::where('date_recording', $request->date)->delete();
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Временное окно успешно удалено'
-            ]
+            'code' => 200,
+            'message' => 'Временное окно успешно удалено'
         ], 200);
     }
 
     public function competition(Request $request)
     {
-        $users = UserQualification::where('qualification_id',
-            Qualification::where('qualification_classifier_id',
+        $users = UserQualification::whereHas('users', function ($query) {
+            $query->where('reject', '!=', true);
+        })->where(
+            'qualification_id',
+            Qualification::where(
+                'qualification_classifier_id',
                 QualificationClassifier::select('id')->whereHas('getSpecialty', function ($query) use ($request) {
                     $query->where('specialty', $request->specialty);
-                })->where('qualification', $request->qualification)->first()->id)->first()->id)
+                })->where('qualification', $request->qualification)->first()->id
+            )->first()->id
+        )
             ->where('type_education', $request->type_education)
             ->where('form_education', $request->form_education)
             ->orderByDesc('middlemark')
             ->get();
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => 'Пользователи для конкурсной ведомости найдены',
-                'content' => CompetitionResource::collection($users)
-            ]
+            'code' => 200,
+            'message' => 'Пользователи для конкурсной ведомости найдены',
+            'content' => CompetitionResource::collection($users)
         ], 200);
-
     }
 
     // TODO: Узнать у Рахманина про контрольные цифры и доделать
     public function statement(Request $request)
     {
-        $statement = UserQualification::where('form_education', $request->form_education)->orderBy('qualification_id')->get();
+        $statement = UserQualification::where('form_education', $request->form_education)->orderBy(
+            'qualification_id'
+        )->get();
 
         $array = [];
 
         for ($i = $statement[0]->qualification_id; $i <= $statement[count($statement) - 1]->qualification_id; $i++) {
-
             $qualification = QualificationClassifier::whereHas('qualification', function ($query) use ($i) {
                 $query->where('id', $i);
             })->first();
@@ -243,7 +230,6 @@ class SecretaryController extends Controller
 
             $count = 0;
             for ($j = 0; $j < count($statement); $j++) {
-
                 if ($statement[$j]->qualification_id == $i) {
                     $count++;
                 }
@@ -251,27 +237,32 @@ class SecretaryController extends Controller
 
             $qualifications = $specialty->code . " / " . $specialty->specialty . " / " . $qualification->qualification;
 
-            $array["$qualifications"]['контрольные цифры'] = Qualification::where('qualification_classifier_id', $qualification->id)->first()->ft_budget_quota;
-            $array["$qualifications"]['кол-во подданых заявлений'] = $count;
-
+            $array["$qualifications"]['контрольные цифры'] = Qualification::where(
+                'qualification_classifier_id',
+                $qualification->id
+            )->first()->ft_budget_quota;
+            $array["$qualifications"]['кол-во поданых заявлений'] = $count;
         }
 
         return $array;
-
     }
 
     public function enrollment(Request $request)
     {
-        $enrollment = UserQualification::where('qualification_id', Qualification::whereHas('getQualificationClassifier', function ($query) use ($request) {
-            $query->where('qualification', $request->qualification);
-        })->first()->id)->orderByDesc('middlemark')->get();
+        $enrollment = UserQualification::where(
+            'qualification_id',
+            Qualification::whereHas('getQualificationClassifier', function ($query) use ($request) {
+                $query->where('qualification', $request->qualification);
+            })->first()->id
+        )->whereHas('users', function ($query) {
+            $query->where('reject', '!=', true);
+        })->orderByDesc('middlemark')->get();
+
 
         return response()->json([
-            'data' => [
-                'code' => 200,
-                'message' => "Пользователи найдены",
-                'content' => EnrollmentResource::collection($enrollment)
-            ]
+            'code' => 200,
+            'message' => "Пользователи найдены",
+            'content' => EnrollmentResource::collection($enrollment)
         ]);
     }
 

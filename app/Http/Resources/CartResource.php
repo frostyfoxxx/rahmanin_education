@@ -15,10 +15,10 @@ class CartResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "first_name" => $this->PersonalData->first_name,
-            "middle_name" => $this->PersonalData->middle_name,
-            "last_name" => $this->PersonalData->last_name,
-            "middlemark" => $this->School->middlemark,
+            "first_name" => $this->PersonalData->first_name ?? null,
+            "middle_name" => $this->PersonalData->middle_name ?? null,
+            "last_name" => $this->PersonalData->last_name ?? null,
+            "middlemark" => $this->School->middlemark ?? null,
             "data_confirmed" => ($this->data_confirmed == 1) ? true : false,
         ];
     }

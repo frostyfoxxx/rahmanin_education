@@ -25,7 +25,7 @@ class CreatePassportTable extends Migration
             $table->string('registration_address');
             $table->boolean('lack_of_citizenship');
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
